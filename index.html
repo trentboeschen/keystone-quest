@@ -169,6 +169,10 @@ let players=ls.get("ks-players",["Player 1"]);let cur=ls.get("ks-cur",players[0]
 let stats=ls.get("ks-stats",{});
 const ps=()=>{const p=stats[cur]||(stats[cur]={});["keys","facts","endings","scores","saves"].forEach(k=>{if(!p[k]||typeof p[k]!=="object")p[k]={}});return p};
 const saveStats=()=>ls.set("ks-stats",stats);
+/* Difficulty scales every timed scene. Adventures are written with Normal timings. */
+const DIFF={untimed:{label:"No timers",mult:0,note:"Timed scenes wait for you."},relaxed:{label:"Relaxed",mult:1.5,note:"Timers run 50% longer."},normal:{label:"Normal",mult:1,note:"Timers as the adventure was written."},challenge:{label:"Challenging",mult:.7,note:"Timers are 30% shorter."},expert:{label:"Expert",mult:.5,note:"Timers are half as long."}};
+const diffKey=()=>DIFF[ps().difficulty]?ps().difficulty:"normal";
+const timerSecs=s=>{if(!s||s.ending||!(+s.timer>0)||!s.timeout)return 0;const m=DIFF[diffKey()].mult;return m?Math.max(3,Math.round(+s.timer*m)):0};
 let sound=ls.get("ks-sound",true);
 
 /* ---------- adventures live on the server: adventures/*.json, read and written through api.php ---------- */
@@ -219,7 +223,8 @@ function renderLibrary(){
   const status=loadState==="loading"?`<p class="small">Loading adventures…</p>`:loadState==="error"?`<div class="warn">${esc(loadErr)} <button data-act="reload" style="margin-left:8px">Try again</button></div>`:!ADVS.length?`<p class="small">No adventures are published yet.</p>`:"";
   const codex=allAdv().map(a=>{const f=(P.facts[a.id]||[]).filter(id=>a.scenes[id]&&a.scenes[id].fact);if(!f.length)return"";return `<details><summary>${esc(a.title)} · ${f.length}</summary><ul>${f.map(id=>`<li>${esc(a.scenes[id].fact)}</li>`).join("")}</ul></details>`}).join("");
   app.innerHTML=`<div class="wrap"><div class="lib"><div><div class="hero"><h1>Type your way through history</h1><p>Read each scene, then type a choice to decide what happens. Careful readers find the best endings, because the right move depends on what really happened.</p></div>${status}<div class="cards">${cards}${isEditor?`<button class="card newcard" data-act="new"><h3>New adventure</h3><span class="small">Write a branching story in the editor</span></button>`:""}</div></div>
-  <aside class="side"><div class="box"><h3>${esc(cur)}</h3><div class="small">${totalH+totalM?`Overall accuracy ${Math.round(100*totalH/(totalH+totalM))}% across ${totalH+totalM} keys`:"No typing yet. Pick an adventure to start."}</div>${keys.length?`<div class="small" style="margin-top:12px">Keys to practise</div><div class="tk">${keys.map(([k,v])=>`<span>${k===" "?"space":esc(k)}<b>${Math.round(v*100)}%</b></span>`).join("")}</div>`:""}
+  <aside class="side"><div class="box"><h3>${esc(cur)}</h3><div class="small">${totalH+totalM?`Overall accuracy ${Math.round(100*totalH/(totalH+totalM))}% across ${totalH+totalM} keys`:"No typing yet. Pick an adventure to start."}</div>
+  <label for="diff">Difficulty</label><select id="diff">${Object.entries(DIFF).map(([k,v])=>`<option value="${k}" ${k===diffKey()?"selected":""}>${v.label}</option>`).join("")}</select><div class="small" id="diffNote" style="margin-top:4px">${esc(DIFF[diffKey()].note)}</div>${keys.length?`<div class="small" style="margin-top:12px">Keys to practise</div><div class="tk">${keys.map(([k,v])=>`<span>${k===" "?"space":esc(k)}<b>${Math.round(v*100)}%</b></span>`).join("")}</div>`:""}
   <p class="small" style="margin:14px 0 0">Profiles, saved progress and scores for all ${players.length} ${players.length===1?"player":"players"} live in this browser. Download a backup to keep them safe or move them to another computer.</p><div class="row" style="margin-top:10px"><button data-act="dataOut">Download data</button><button data-act="dataIn">Import data</button></div></div>
   <div class="box"><h3>Field notes</h3><div class="small">Facts you have uncovered while playing.</div>${codex||`<p class="small">None yet.</p>`}</div>
   ${isEditor?`<div class="box"><h3>Editor mode</h3><div class="small">${ADVS.filter(a=>a.published).length} published, ${ADVS.filter(a=>!a.published).length} ${ADVS.filter(a=>!a.published).length===1?"draft":"drafts"}. Players only see published adventures.</div><div class="row" style="margin-top:10px"><button data-act="new">New adventure</button><button data-act="import">Import</button></div></div>`:""}</aside></div></div>`;
@@ -240,12 +245,12 @@ function go(id,resumed){
   if(s&&!G.testing){const P=ps();
     if(s.fact){P.facts[aid]=P.facts[aid]||[];if(!P.facts[aid].includes(id))P.facts[aid].push(id)}
     if(s.ending){P.endings[aid]=P.endings[aid]||[];if(!P.endings[aid].includes(id))P.endings[aid].push(id);
-      if(!resumed){P.scores[aid]=P.scores[aid]||[];P.scores[aid].push({t:Date.now(),ending:s.ending,scene:id,acc:acc(),wpm:wpm()});if(P.scores[aid].length>50)P.scores[aid].shift()}
+      if(!resumed){P.scores[aid]=P.scores[aid]||[];P.scores[aid].push({t:Date.now(),ending:s.ending,scene:id,acc:acc(),wpm:wpm(),diff:diffKey()});if(P.scores[aid].length>50)P.scores[aid].shift()}
       delete P.saves[aid]}
     else P.saves[aid]={scene:id,flags:[...G.flags],hits:G.hits,misses:G.misses,ms:Math.round(G.ms),notes:G.notes,t:Date.now()};
     saveStats()}
   renderPlay();
-  if(s&&!s.ending&&+s.timer>0&&s.timeout){const tok=G.token,dur=+s.timer*1000,end=performance.now()+dur;
+  if(timerSecs(s)){const tok=G.token,dur=timerSecs(s)*1000,end=performance.now()+dur;
     const loop=()=>{if(tok!==G.token||view!=="play")return;const left=end-performance.now();const bar=$("#tbar");if(bar)bar.style.width=Math.max(0,left/dur*100)+"%";
       if(left<=0){if(G.t0)G.ms+=performance.now()-G.t0;beep(false);go(s.timeout);return}requestAnimationFrame(loop)};requestAnimationFrame(loop)}
 }
@@ -263,12 +268,12 @@ function renderPlay(){
   let body;
   if(!s){body=`<div class="story"><p>This choice leads to a scene called “${esc(G.scene)}”, which does not exist yet.</p></div>`}
   else if(s.ending){const fd=(ps().endings[a.id]||[]).length,tot=endingIds(a).length;
-    body=`<span class="badge b-${esc(s.ending)}">${{good:"Best ending",mixed:"Hard-won ending",bad:"Story over"}[s.ending]||"The end"}</span><div class="story">${para(s.text)}${s.fact?`<div class="note"><strong>Field note</strong>${esc(s.fact)}</div>`:""}</div>
+    body=`<span class="badge b-${esc(s.ending)}">${{good:"Best ending",mixed:"Hard-won ending",bad:"Story over"}[s.ending]||"The end"}</span> <span class="small">on ${esc(DIFF[diffKey()].label)}</span><div class="story">${para(s.text)}${s.fact?`<div class="note"><strong>Field note</strong>${esc(s.fact)}</div>`:""}</div>
     <div class="stats"><div><b>${acc()}%</b><span>accuracy</span></div><div><b>${wpm()}</b><span>words per minute</span></div><div><b>${G.notes}</b><span>field notes this run</span></div><div><b>${G.testing?"–":fd+"/"+tot}</b><span>endings found</span></div></div>`}
   else body=`<div class="story">${para(s.text)}${s.fact?`<div class="note"><strong>Field note</strong>${esc(s.fact)}</div>`:""}</div>`;
   app.innerHTML=`<section class="play"><div class="scene-art">${art(a.art,a.accent)}</div>
-  <div class="ptop"><h2>${esc(a.title)}</h2><div class="meter"><span>Accuracy <b id="mAcc">${acc()}%</b></span><span>Speed <b id="mW">${wpm()}</b> wpm</span></div><button class="ghost" data-act="${G.testing?"backEdit":"library"}">${G.testing?"Back to editor":"Save and leave"}</button></div>
-  ${s&&+s.timer>0&&s.timeout&&!s.ending?`<div class="timer"><i id="tbar"></i></div>`:""}
+  <div class="ptop"><h2>${esc(a.title)}</h2><div class="meter"><span>Accuracy <b id="mAcc">${acc()}%</b></span><span>Speed <b id="mW">${wpm()}</b> wpm</span><span>${esc(DIFF[diffKey()].label)}</span></div><button class="ghost" data-act="${G.testing?"backEdit":"library"}">${G.testing?"Back to editor":"Save and leave"}</button></div>
+  ${timerSecs(s)?`<div class="timer"><i id="tbar"></i></div>`:s&&!s.ending&&+s.timer>0&&s.timeout?`<p class="small">No timers: take your time.</p>`:""}
   ${body}<div class="prompt">${s&&s.ending?"Type to continue":"Type a choice"}</div><div class="choices" id="choices"></div>
   <div class="kb" id="kb"></div><div class="legend"><span><i style="background:var(--f1)"></i>little finger</span><span><i style="background:var(--f2)"></i>ring</span><span><i style="background:var(--f3)"></i>middle</span><span><i style="background:var(--f4)"></i>pointer</span></div>
   ${coarse?`<div class="warn">This game needs a physical keyboard. Open it on a computer, or connect a keyboard to this tablet.</div>`:""}</section>`;
@@ -375,7 +380,7 @@ function renderEditor(){
    <div class="grid3"><div><label for="sen">Ending</label><select id="sen" data-f="ending"><option value="">Not an ending</option>${["good","mixed","bad"].map(k=>`<option value="${k}" ${s.ending===k?"selected":""}>${{good:"Best ending",mixed:"Hard-won ending",bad:"Story over"}[k]}</option>`).join("")}</select></div>
    <div><label for="sti">Timer in seconds</label><input id="sti" type="number" min="0" max="120" data-f="timer" value="${esc(s.timer||"")}" placeholder="none"></div>
    <div><label for="sto">If time runs out, go to</label><select id="sto" data-f="timeout">${opts(ids,s.timeout,`<option value="">Choose a scene</option>`)}</select></div></div>
-   ${s.ending?`<p class="small">Endings don't need choices. The player is offered “play again” automatically.</p>`:`<h3 style="margin-top:22px">Choices</h3><p class="small">Players type the choice to pick it. Keep choices lowercase, 3 to 6 words, and about the same length, so the shortest one isn't always the easy pick. Avoid starting two choices with the same word. Timers start when the scene appears, so allow time to read.</p>${chs}<button data-act="addChoice" style="margin-top:12px">+ Add choice</button>`}
+   ${s.ending?`<p class="small">Endings don't need choices. The player is offered “play again” automatically.</p>`:`<h3 style="margin-top:22px">Choices</h3><p class="small">Players type the choice to pick it. Keep choices lowercase, 3 to 6 words, and about the same length, so the shortest one isn't always the easy pick. Avoid starting two choices with the same word. Timers start when the scene appears, so allow time to read. Write timers for Normal difficulty; each player's difficulty setting scales them (No timers, Relaxed ×1.5, Challenging ×0.7, Expert ×0.5).</p>${chs}<button data-act="addChoice" style="margin-top:12px">+ Add choice</button>`}
   </section></div></div>`;
 }
 function dirty(){E.dirty=true;const m=$("#savedMsg");if(m)m.textContent="Unsaved changes"}
@@ -424,7 +429,7 @@ function importAdv(txt){
 /* ---------- player data backup ---------- */
 function backup(){return{app:"keystone",kind:"player-data",version:1,exported:new Date().toISOString(),players,current:cur,sound,stats}}
 function mergeStats(a,b){/* combine two copies of one player's data, keeping the most complete of each part */
-  const o={keys:{},facts:{},endings:{},scores:{},saves:{}};
+  const o={keys:{},facts:{},endings:{},scores:{},saves:{},difficulty:a.difficulty||b.difficulty};
   const ka=a.keys||{},kb=b.keys||{};new Set([...Object.keys(ka),...Object.keys(kb)]).forEach(k=>{const x=ka[k]||[0,0],y=kb[k]||[0,0];o.keys[k]=x[0]+x[1]>=y[0]+y[1]?x:y});
   ["facts","endings"].forEach(f=>{const A=a[f]||{},B=b[f]||{};new Set([...Object.keys(A),...Object.keys(B)]).forEach(id=>o[f][id]=[...new Set([...(A[id]||[]),...(B[id]||[])])])});
   const SA=a.scores||{},SB=b.scores||{};new Set([...Object.keys(SA),...Object.keys(SB)]).forEach(id=>{const m=new Map;[...(SA[id]||[]),...(SB[id]||[])].forEach(r=>m.set(r.t+"|"+r.scene,r));o.scores[id]=[...m.values()].sort((x,y)=>x.t-y.t).slice(-50)});
@@ -490,6 +495,7 @@ document.addEventListener("click",async e=>{
     case "close":case "closeBg":return closeModal();
   }
 });
+document.addEventListener("change",e=>{if(e.target.id!=="diff")return;ps().difficulty=e.target.value;saveStats();const n=$("#diffNote");if(n)n.textContent=DIFF[diffKey()].note});
 $("#player").addEventListener("change",e=>{
   if(e.target.value==="__add"){renderPlayers();modal(`<h3>Add a player</h3><label for="pn">Name</label><input id="pn" maxlength="24" autocomplete="off"><div class="row" style="margin-top:12px"><button class="pri" data-act="addP">Add</button><button data-act="close">Cancel</button></div>`);return}
   saveStats();cur=e.target.value;ls.set("ks-cur",cur);if(view==="play"&&!(G&&G.testing))return renderLibrary();if(view==="library")renderLibrary();

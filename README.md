@@ -124,6 +124,20 @@ It plays every path through the story to make sure:
 - Every save and delete first copies the old version to `adventures/_backups/`. The last 20 per adventure are kept; you can change that with `BACKUPS_PER_ADVENTURE` in `config.php`. To restore one, copy it back into `adventures/` with the original file name.
 - If someone saves an adventure after you opened it (another tab, another person, or a hand edit on the server), the editor warns you. You can then choose to overwrite their version or load it.
 
+## Difficulty
+
+Each player picks a difficulty in their player panel. It scales every timed scene in every adventure:
+
+| Setting | Timers |
+|---|---|
+| No timers | Timed scenes wait for you |
+| Relaxed | 1.5× longer |
+| Normal | As written in the adventure |
+| Challenging | 0.7× (30% shorter) |
+| Expert | 0.5× (half as long) |
+
+Write adventure timers for Normal. The validator checks them against a beginner's typing speed. Each finished run records the difficulty it was played on.
+
 ## Player data
 
-Player profiles, saved progress, scores and key stats stay in each player's browser (localStorage), not on the server. Use **Download data** and **Import data** in the player panel to back them up or move them to another computer.
+Player profiles, difficulty, saved progress, scores and key stats stay in each player's browser (localStorage), not on the server. Use **Download data** and **Import data** in the player panel to back them up or move them to another computer.

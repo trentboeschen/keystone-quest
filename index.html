@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Keystone Quest</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Atkinson+Hyperlegible+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+/* VOICE: grown-up historical adventure; serious, warm, never babyish
+   IDEA: an excavation field notebook: scenes read like journal pages, facts like museum labels
+   PICTURE: each adventure's painted scene band above the story; the typed choices are the tool
+   COLOUR and TYPE: limestone ground, basalt ink, one accent per adventure (fresco red, faience teal); Cinzel inscriptions, Atkinson Hyperlegible text and mono
+   LAYOUT: library of adventure cards + player panel; play column (scene, story, choices, keyboard); editor two panes */
+:root{color-scheme:light dark;--bg:light-dark(#ebe9e4,#151614);--panel:light-dark(#fbfaf7,#20221f);--ink:light-dark(#1c1d1b,#ebeae4);--mute:light-dark(#5d605a,#a2a59d);--line:light-dark(#d3d0c9,#363934);--acc:#b8352a;--good:light-dark(#2d7a4c,#5fbf86);--mix:light-dark(#9a6a0c,#e0b04a);--bad:light-dark(#b0322a,#ef7a6e);--f1:#9a6fc0;--f2:#3f84c4;--f3:#3f9a63;--f4:#d1912c}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.55 "Atkinson Hyperlegible",system-ui,sans-serif;overflow-x:clip}
+h1,h2,h3{font-family:Cinzel,Georgia,serif;font-weight:800;line-height:1.08;margin:0;text-wrap:balance}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer;border:1px solid var(--line);background:var(--panel);border-radius:10px;padding:10px 16px;min-height:44px}
+button.pri{background:var(--acc);border-color:var(--acc);color:#fff;font-weight:700}
+button.ghost{background:transparent}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+input,select,textarea{width:100%;font-size:16px;border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:9px 11px}
+textarea{resize:vertical;min-height:90px}
+label{display:block;font-size:14px;color:var(--mute);margin:12px 0 4px}
+.top{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:12px max(4vw,16px);border-bottom:1px solid var(--line);background:var(--panel)}
+.brand{font-family:Cinzel,serif;font-weight:800;font-size:22px;margin-right:auto;display:flex;align-items:center;gap:10px}
+.brand svg{width:28px;height:28px}
+.top select{width:auto;min-height:44px}
+.wrap{max-width:1240px;margin:0 auto;padding:clamp(20px,3vw,40px) max(4vw,16px)}
+.lib{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:28px}
+.hero h1{font-size:clamp(32px,4.5vw,50px)}
+.hero p{color:var(--mute);max-width:62ch;margin:10px 0 24px}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:18px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden;display:flex;flex-direction:column}
+.card .art{height:150px}
+.card .body{padding:16px 18px 18px;display:flex;flex-direction:column;gap:6px;flex:1}
+.era{font-size:14px;color:var(--mute)}
+.card h3{font-size:22px}
+.card p{margin:0;color:var(--mute);font-size:15px;flex:1}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.card .row{margin-top:10px}
+.draft{font-size:13px;font-weight:700;color:var(--mix);margin-top:8px}
+label.pub{display:flex;gap:10px;align-items:center;color:var(--ink);font-weight:700;font-size:16px;margin:4px 0 6px;min-height:44px;cursor:pointer}
+label.pub input{width:22px;height:22px;accent-color:var(--acc)}
+input[readonly]{opacity:.7}
+.newcard{border-style:dashed;align-items:center;justify-content:center;min-height:260px;text-align:center;padding:20px;gap:10px}
+.art svg{display:block;width:100%;height:100%}
+.side{display:flex;flex-direction:column;gap:18px}
+.box{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px}
+.box h3{font-size:18px;margin-bottom:8px}
+.small{font-size:14px;color:var(--mute)}
+.tk{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.tk span{font-family:"Atkinson Hyperlegible Mono",monospace;border:1px solid var(--line);border-radius:6px;padding:4px 8px;font-size:15px}
+.tk b{color:var(--bad);font-weight:600;font-size:13px;margin-left:4px}
+details{border-top:1px solid var(--line);padding:8px 0}
+summary{cursor:pointer;font-weight:700}
+details li{font-size:14px;margin:6px 0;color:var(--mute)}
+/* play */
+.play{max-width:860px;margin:0 auto;padding:0 max(3vw,12px) 40px}
+.scene-art{height:clamp(130px,24vw,220px);border-radius:0 0 16px 16px;overflow:hidden}
+.ptop{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:16px 0 6px}
+.ptop h2{font-size:clamp(22px,3vw,30px);margin-right:auto}
+.meter{display:flex;gap:16px;font-size:15px;color:var(--mute)}
+.meter b{color:var(--ink);font-variant-numeric:tabular-nums}
+.timer{height:10px;border-radius:5px;background:var(--line);overflow:hidden;margin:10px 0}
+.timer i{display:block;height:100%;background:var(--acc);width:100%}
+.story{font-size:clamp(18px,2vw,20px);line-height:1.6;margin:14px 0}
+.story p{margin:0 0 12px;max-width:66ch}
+.note{border-left:4px solid var(--acc);background:var(--panel);padding:12px 16px;border-radius:0 10px 10px 0;font-size:16px;max-width:66ch}
+.note strong{font-family:Cinzel,serif;display:block;font-size:14px;margin-bottom:2px}
+.prompt{font-size:14px;color:var(--mute);margin:20px 0 8px}
+.choices{display:flex;flex-direction:column;gap:10px}
+.ch{font-family:"Atkinson Hyperlegible Mono",monospace;font-size:clamp(19px,2.6vw,25px);background:var(--panel);border:2px solid var(--line);border-radius:12px;padding:14px 18px;transition:opacity .15s,border-color .15s;white-space:pre-wrap;word-break:break-word}
+.ch .t{color:var(--acc);font-weight:600}
+.ch .n{border-bottom:3px solid var(--acc)}
+.ch.on{border-color:var(--acc)}
+.ch.off{opacity:.32}
+.ch.done{background:var(--acc);color:#fff;border-color:var(--acc)}
+.ch.done .t{color:#fff}
+.shake{animation:sh .25s}
+@keyframes sh{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.badge{display:inline-block;font-weight:700;font-size:14px;border-radius:999px;padding:4px 12px;color:#fff}
+.b-good{background:var(--good)}.b-mixed{background:var(--mix)}.b-bad{background:var(--bad)}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:18px 0}
+.stats div{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.stats b{display:block;font-size:26px;font-variant-numeric:tabular-nums}
+.stats span{font-size:13px;color:var(--mute)}
+.kb{margin:26px auto 0;display:flex;flex-direction:column;gap:6px;align-items:center;user-select:none}
+.kr{display:flex;gap:6px}
+.k{width:clamp(26px,6.2vw,46px);height:clamp(30px,6.2vw,44px);border-radius:7px;display:grid;place-items:center;font-family:"Atkinson Hyperlegible Mono",monospace;font-size:clamp(13px,1.8vw,17px);background:var(--panel);border:1px solid var(--line);border-bottom:4px solid var(--fc);position:relative}
+.k.hot{background:var(--fc);color:#fff;transform:translateY(-2px)}
+.k.bump::after{content:"";position:absolute;bottom:4px;width:10px;height:2px;background:currentColor;opacity:.6}
+.k.weak::before{content:"";position:absolute;top:3px;right:3px;width:6px;height:6px;border-radius:50%;background:var(--bad)}
+.k.space{width:clamp(160px,40vw,300px)}
+.legend{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;font-size:13px;color:var(--mute);margin-top:8px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:middle}
+.warn{background:var(--panel);border:1px solid var(--mix);border-radius:10px;padding:10px 14px;font-size:15px;margin-top:12px}
+/* editor */
+.edbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:18px}
+.edbar h2{font-size:clamp(22px,3vw,30px);margin-right:auto}
+.ed{display:grid;grid-template-columns:320px minmax(0,1fr);gap:22px;align-items:start}
+.slist{display:flex;flex-direction:column;gap:4px;margin-top:10px;max-height:420px;overflow:auto}
+.slist button{text-align:left;display:flex;justify-content:space-between;gap:8px;min-height:40px;padding:8px 12px;font-family:"Atkinson Hyperlegible Mono",monospace;font-size:15px}
+.slist button.sel{border-color:var(--acc);box-shadow:inset 3px 0 0 var(--acc)}
+.dot{width:9px;height:9px;border-radius:50%;flex:none;align-self:center}
+.chrow{border:1px solid var(--line);border-radius:10px;padding:12px;margin-top:10px;display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1.2fr) auto;gap:8px;align-items:end}
+.chrow .adv{grid-column:1/-1;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.chrow label{margin-top:0}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.issues li{font-size:14px;margin:6px 0;cursor:pointer}
+.saved{font-size:14px;color:var(--mute)}
+.modal{position:fixed;inset:0;background:rgb(0 0 0/.45);display:grid;place-items:center;padding:16px;z-index:9}
+.modal .box{width:min(640px,100%);max-height:90vh;overflow:auto}
+.modal textarea{min-height:240px;font-family:"Atkinson Hyperlegible Mono",monospace;font-size:13px}
+@media(max-width:900px){.lib,.ed{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:600px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.grid3,.chrow,.chrow .adv{grid-template-columns:minmax(0,1fr)}.k{width:calc((100vw - 90px)/11)}}
+@media(prefers-reduced-motion:reduce){.shake{animation:none}.k.hot{transform:none}}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="brand"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M4 28 L4 14 Q16 0 28 14 L28 28 L21 28 L21 17 Q16 11 11 17 L11 28Z" fill="var(--acc)"/><path d="M13 4 h6 l-1 7 h-4z" fill="currentColor"/></svg>Keystone Quest</div>
+  <select id="player" aria-label="Player"></select>
+  <button class="ghost" data-act="sound" id="soundBtn">Sound on</button>
+  <button class="ghost" data-act="library">Adventures</button>
+  <button class="ghost" data-act="signIn" id="editBtn">Editor</button>
+</header>
+<main id="app"></main>
+<div id="modal"></div>
+<script>
+{
+const ARTS={none:"Plain",volcano:"Volcano",desert:"Desert valley",castle:"Castle",sea:"Sea voyage"};
+
+/* ---------- helpers ---------- */
+const $=s=>document.querySelector(s);
+const app=$("#app");
+const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const ls={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+const clone=o=>JSON.parse(JSON.stringify(o));
+const rid=()=>Math.random().toString(36).slice(2,7);
+const list=s=>String(s||"").split(",").map(t=>t.trim().toLowerCase()).filter(Boolean);
+const slug=s=>String(s).toLowerCase().trim().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");
+
+/* ---------- scene art ---------- */
+function art(kind,acc){
+  let r=n=>{let x=Math.sin(n*99.1)*1e4;return x-Math.floor(x)};
+  if(kind==="volcano"){
+    let cols="";for(let i=0;i<9;i++)cols+=`<rect x="${60+i*22}" y="170" width="9" height="42" fill="#d8c7ac"/>`;
+    let ash="";for(let i=0;i<70;i++)ash+=`<circle cx="${(r(i)*800).toFixed(0)}" cy="${(r(i+7)*220).toFixed(0)}" r="${(1+r(i+3)*2.2).toFixed(1)}" fill="#2a2627" opacity=".55"/>`;
+    let puff="";[[520,58,62],[468,72,44],[575,70,48],[500,30,40],[548,28,42],[430,92,30],[612,96,34]].forEach(([x,y,s],i)=>puff+=`<circle cx="${x}" cy="${y}" r="${s}" fill="${i%2?"#4b4446":"#5a5254"}"/>`);
+    return `<svg viewBox="0 0 800 240" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><defs><linearGradient id="gv" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3c3537"/><stop offset=".55" stop-color="#9b5236"/><stop offset="1" stop-color="#e6a463"/></linearGradient></defs><rect width="800" height="240" fill="url(#gv)"/><path d="M505 130 C500 100 510 80 512 60 L530 60 C532 80 542 100 536 130Z" fill="#4b4446"/>${puff}<path d="M280 240 L465 128 Q520 110 575 128 L800 240Z" fill="#2a2425"/><path d="M465 128 Q520 110 575 128" stroke="#ff7a3c" stroke-width="3" fill="none" opacity=".8"/><rect y="208" width="800" height="32" fill="#1c1919"/><path d="M48 170 L170 140 L292 170Z" fill="#d8c7ac"/>${cols}<rect x="48" y="206" width="244" height="6" fill="#bda98b"/>${ash}</svg>`}
+  if(kind==="desert"){
+    return `<svg viewBox="0 0 800 240" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><defs><linearGradient id="gd" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8fc0d4"/><stop offset="1" stop-color="#f1d49b"/></linearGradient></defs><rect width="800" height="240" fill="url(#gd)"/><circle cx="660" cy="58" r="30" fill="#fff4d8"/><path d="M0 120 L90 70 L170 98 L260 52 L360 96 L470 60 L560 100 L660 74 L800 110 L800 240 L0 240Z" fill="#c98c4e"/><path d="M0 150 L120 112 L230 140 L330 110 L440 146 L560 118 L700 150 L800 132 L800 240 L0 240Z" fill="#a9673a"/><path d="M0 196 Q400 176 800 200 L800 240 L0 240Z" fill="#dcab6a"/><rect x="372" y="150" width="56" height="10" fill="#7c4a28"/><rect x="380" y="160" width="40" height="44" fill="#26180f"/>${[0,1,2,3].map(i=>`<rect x="${372-i*8}" y="${204+i*6}" width="${56+i*16}" height="5" fill="#c4935a"/>`).join("")}<rect x="250" y="176" width="40" height="22" fill="#b98754"/><rect x="510" y="180" width="34" height="18" fill="#b98754"/></svg>`}
+  if(kind==="castle"){
+    let cren="";for(let i=0;i<10;i++)cren+=`<rect x="${330+i*16}" y="96" width="9" height="12" fill="#3b3c43"/>`;
+    return `<svg viewBox="0 0 800 240" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><defs><linearGradient id="gc" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#93aebf"/><stop offset="1" stop-color="#e3e6dc"/></linearGradient></defs><rect width="800" height="240" fill="url(#gc)"/><path d="M0 170 Q200 120 400 150 T800 140 L800 240 L0 240Z" fill="#6e8a57"/><rect x="330" y="108" width="150" height="80" fill="#3b3c43"/>${cren}<rect x="300" y="70" width="40" height="118" fill="#2f3036"/><rect x="470" y="70" width="40" height="118" fill="#2f3036"/><path d="M296 70 L320 40 L344 70Z M466 70 L490 40 L514 70Z" fill="${acc}"/><path d="M390 188 L390 150 Q405 134 420 150 L420 188Z" fill="#1d1d21"/><path d="M0 200 Q300 170 800 205 L800 240 L0 240Z" fill="#4c6a3c"/></svg>`}
+  if(kind==="sea"){
+    let w="";for(let i=0;i<6;i++)w+=`<path d="M0 ${150+i*16} q50 -10 100 0 t100 0 t100 0 t100 0 t100 0 t100 0 t100 0 t100 0" stroke="#bfe0ea" stroke-width="2" fill="none" opacity="${.5-i*.06}"/>`;
+    return `<svg viewBox="0 0 800 240" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="800" height="240" fill="#c9d8de"/><rect y="140" width="800" height="100" fill="#2f5f73"/>${w}<path d="M330 150 L470 150 L450 172 L350 172Z" fill="#5a3a24"/><rect x="398" y="60" width="5" height="90" fill="#3a2516"/><path d="M403 66 Q450 100 403 140Z" fill="#f2ead8"/><path d="M398 70 Q360 104 398 136Z" fill="${acc}"/></svg>`}
+  return `<svg viewBox="0 0 800 240" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="800" height="240" fill="${acc}"/><rect width="800" height="240" fill="#000" opacity=".25"/><path d="M0 180 Q400 120 800 180 L800 240 L0 240Z" fill="#000" opacity=".2"/></svg>`;
+}
+
+/* ---------- players, stats, storage ---------- */
+let players=ls.get("ks-players",["Player 1"]);let cur=ls.get("ks-cur",players[0]);if(!players.includes(cur))cur=players[0];
+let stats=ls.get("ks-stats",{});
+const ps=()=>{const p=stats[cur]||(stats[cur]={});["keys","facts","endings","scores","saves"].forEach(k=>{if(!p[k]||typeof p[k]!=="object")p[k]={}});return p};
+const saveStats=()=>ls.set("ks-stats",stats);
+let sound=ls.get("ks-sound",true);
+
+/* ---------- adventures live on the server: adventures/*.json, read and written through api.php ---------- */
+let ADVS=[],loadState="loading",loadErr="",isEditor=false,editingOn=true;
+let editKey=ls.get("ksq-key","");
+const allAdv=()=>ADVS;
+const findAdv=id=>ADVS.find(a=>a.id===id);
+const validId=id=>/^[a-z0-9][a-z0-9-]{0,63}$/.test(id);
+async function api(action,body){
+  const h={"Content-Type":"application/json"};if(editKey)h["X-Edit-Key"]=editKey;
+  const r=await fetch("api.php?action="+action,{method:body?"POST":"GET",headers:h,body:body?JSON.stringify(body):undefined,cache:"no-store"});
+  let d={};try{d=await r.json()}catch(e){}
+  if(!r.ok){const er=new Error(d.error||"The server answered with an error ("+r.status+").");er.status=r.status;er.data=d;throw er}
+  return d;
+}
+async function loadAdventures(){
+  try{const d=await api("list");ADVS=d.adventures||[];isEditor=!!d.editor;editingOn=d.editing!==false;
+    if(editKey&&!isEditor){editKey="";ls.set("ksq-key","")}loadState="ok"}
+  catch(e){loadState="error";loadErr=e.status?e.message:"Couldn't reach the server. Check that api.php is uploaded and PHP is running."}
+  renderPlayers();
+}
+function signIn(then){
+  if(!editingOn)return modal(`<h3>Editing is switched off</h3><p>Set an editor password in config.php on the server to create and edit adventures.</p><div class="row"><button data-act="close">OK</button></div>`);
+  window._afterSignIn=then;
+  modal(`<h3>Editor sign-in</h3><p class="small">Enter the editor password from config.php. This browser will remember it until you sign out.</p><label for="ek">Password</label><input id="ek" type="password" autocomplete="current-password"><div class="row" style="margin-top:12px"><button class="pri" data-act="signInGo">Sign in</button><button data-act="close">Cancel</button><span class="small" id="ekMsg"></span></div>`);
+}
+
+function renderPlayers(){$("#player").innerHTML=players.map(p=>`<option ${p===cur?"selected":""}>${esc(p)}</option>`).join("")+`<option value="__add">+ Add player</option>`;$("#soundBtn").textContent=sound?"Sound on":"Sound off";
+  const eb=$("#editBtn");if(eb){eb.textContent=isEditor?"Sign out of editing":"Editor";eb.dataset.act=isEditor?"signOut":"signIn";eb.hidden=!editingOn&&!isEditor}}
+
+/* ---------- sound ---------- */
+let ac=null;
+function beep(ok){if(!sound)return;try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();const o=ac.createOscillator(),g=ac.createGain();o.type=ok?"triangle":"sawtooth";o.frequency.value=ok?660:140;g.gain.setValueAtTime(ok?.05:.07,ac.currentTime);g.gain.exponentialRampToValueAtTime(.0001,ac.currentTime+(ok?.06:.18));o.connect(g).connect(ac.destination);o.start();o.stop(ac.currentTime+.2)}catch(e){}}
+
+/* ---------- library ---------- */
+let view="library";
+function setAccent(c){document.documentElement.style.setProperty("--acc",c||"#b8352a")}
+function endingIds(a){return Object.keys(a.scenes).filter(k=>a.scenes[k].ending)}
+function renderLibrary(){
+  view="library";setAccent("#b8352a");
+  const P=ps();
+  const keys=Object.entries(P.keys).filter(([k,v])=>v[0]+v[1]>=6).map(([k,v])=>[k,v[0]/(v[0]+v[1])]).sort((a,b)=>a[1]-b[1]).slice(0,6).filter(x=>x[1]<.97);
+  const totalH=Object.values(P.keys).reduce((s,v)=>s+v[0],0),totalM=Object.values(P.keys).reduce((s,v)=>s+v[1],0);
+  const cards=allAdv().map(a=>{const found=(P.endings[a.id]||[]).length,tot=endingIds(a).length,sv=P.saves[a.id],runs=P.scores[a.id]||[];
+    const best=runs.length?`Best run: ${Math.max(...runs.map(r=>r.acc))}% accuracy · ${Math.max(...runs.map(r=>r.wpm))} wpm · ${runs.length} ${runs.length===1?"run":"runs"}`:"";
+    const canResume=sv&&a.scenes[sv.scene];
+    return `<article class="card" style="--acc:${esc(a.accent||"#b8352a")}"><div class="art">${art(a.art,a.accent)}</div><div class="body"><span class="era">${esc(a.era)}</span><h3>${esc(a.title)}</h3><p>${esc(a.blurb)}</p><span class="small">Endings found: ${found} of ${tot}</span>${best?`<span class="small">${best}</span>`:""}${canResume?`<span class="small">In progress, saved ${new Date(sv.t).toLocaleDateString()}</span>`:""}<div class="row">${canResume?`<button class="pri" data-act="resume" data-id="${esc(a.id)}">Continue</button><button data-act="play" data-id="${esc(a.id)}">Start over</button>`:`<button class="pri" data-act="play" data-id="${esc(a.id)}">Play</button>`}${isEditor?`<button data-act="edit" data-id="${esc(a.id)}">Edit</button><button class="ghost" data-act="copy" data-id="${esc(a.id)}">Duplicate</button>`:""}</div>${a.published?"":`<span class="draft">Draft · only editors can see this</span>`}</div></article>`}).join("");
+  const status=loadState==="loading"?`<p class="small">Loading adventures…</p>`:loadState==="error"?`<div class="warn">${esc(loadErr)} <button data-act="reload" style="margin-left:8px">Try again</button></div>`:!ADVS.length?`<p class="small">No adventures are published yet.</p>`:"";
+  const codex=allAdv().map(a=>{const f=(P.facts[a.id]||[]).filter(id=>a.scenes[id]&&a.scenes[id].fact);if(!f.length)return"";return `<details><summary>${esc(a.title)} · ${f.length}</summary><ul>${f.map(id=>`<li>${esc(a.scenes[id].fact)}</li>`).join("")}</ul></details>`}).join("");
+  app.innerHTML=`<div class="wrap"><div class="lib"><div><div class="hero"><h1>Type your way through history</h1><p>Read each scene, then type a choice to decide what happens. Careful readers find the best endings, because the right move depends on what really happened.</p></div>${status}<div class="cards">${cards}${isEditor?`<button class="card newcard" data-act="new"><h3>New adventure</h3><span class="small">Write a branching story in the editor</span></button>`:""}</div></div>
+  <aside class="side"><div class="box"><h3>${esc(cur)}</h3><div class="small">${totalH+totalM?`Overall accuracy ${Math.round(100*totalH/(totalH+totalM))}% across ${totalH+totalM} keys`:"No typing yet. Pick an adventure to start."}</div>${keys.length?`<div class="small" style="margin-top:12px">Keys to practise</div><div class="tk">${keys.map(([k,v])=>`<span>${k===" "?"space":esc(k)}<b>${Math.round(v*100)}%</b></span>`).join("")}</div>`:""}
+  <p class="small" style="margin:14px 0 0">Profiles, saved progress and scores for all ${players.length} ${players.length===1?"player":"players"} live in this browser. Download a backup to keep them safe or move them to another computer.</p><div class="row" style="margin-top:10px"><button data-act="dataOut">Download data</button><button data-act="dataIn">Import data</button></div></div>
+  <div class="box"><h3>Field notes</h3><div class="small">Facts you have uncovered while playing.</div>${codex||`<p class="small">None yet.</p>`}</div>
+  ${isEditor?`<div class="box"><h3>Editor mode</h3><div class="small">${ADVS.filter(a=>a.published).length} published, ${ADVS.filter(a=>!a.published).length} ${ADVS.filter(a=>!a.published).length===1?"draft":"drafts"}. Players only see published adventures.</div><div class="row" style="margin-top:10px"><button data-act="new">New adventure</button><button data-act="import">Import</button></div></div>`:""}</aside></div></div>`;
+}
+
+/* ---------- play ---------- */
+let G=null;
+const FING={q:1,a:1,z:1,w:2,s:2,x:2,e:3,d:3,c:3,r:4,f:4,v:4,t:4,g:4,b:4,y:4,h:4,n:4,u:4,j:4,m:4,i:3,k:3,",":3,o:2,l:2,".":2,p:1,";":1,"/":1,"'":1," ":0};
+const ROWS=[["q","w","e","r","t","y","u","i","o","p"],["a","s","d","f","g","h","j","k","l",";","'"],["z","x","c","v","b","n","m",",",".","/"]];
+function play(adv,sceneId,testing,resume){view="play";setAccent(adv.accent);G={adv,flags:new Set,buf:"",hits:0,misses:0,ms:0,t0:0,notes:0,testing:!!testing,token:0,locked:false};
+  if(resume&&adv.scenes[resume.scene]){G.flags=new Set(resume.flags||[]);G.hits=+resume.hits||0;G.misses=+resume.misses||0;G.ms=+resume.ms||0;G.notes=+resume.notes||0;return go(resume.scene,true)}
+  go(sceneId||adv.start)}
+function sc(){return G.adv.scenes[G.scene]}
+function go(id,resumed){
+  G.scene=id;G.buf="";G.t0=0;G.token++;G.locked=false;
+  const s=sc(),aid=G.adv.id;
+  if(s&&s.fact&&!resumed)G.notes++;
+  if(s&&!G.testing){const P=ps();
+    if(s.fact){P.facts[aid]=P.facts[aid]||[];if(!P.facts[aid].includes(id))P.facts[aid].push(id)}
+    if(s.ending){P.endings[aid]=P.endings[aid]||[];if(!P.endings[aid].includes(id))P.endings[aid].push(id);
+      if(!resumed){P.scores[aid]=P.scores[aid]||[];P.scores[aid].push({t:Date.now(),ending:s.ending,scene:id,acc:acc(),wpm:wpm()});if(P.scores[aid].length>50)P.scores[aid].shift()}
+      delete P.saves[aid]}
+    else P.saves[aid]={scene:id,flags:[...G.flags],hits:G.hits,misses:G.misses,ms:Math.round(G.ms),notes:G.notes,t:Date.now()};
+    saveStats()}
+  renderPlay();
+  if(s&&!s.ending&&+s.timer>0&&s.timeout){const tok=G.token,dur=+s.timer*1000,end=performance.now()+dur;
+    const loop=()=>{if(tok!==G.token||view!=="play")return;const left=end-performance.now();const bar=$("#tbar");if(bar)bar.style.width=Math.max(0,left/dur*100)+"%";
+      if(left<=0){if(G.t0)G.ms+=performance.now()-G.t0;beep(false);go(s.timeout);return}requestAnimationFrame(loop)};requestAnimationFrame(loop)}
+}
+function visible(){
+  const s=sc();if(!s)return[{text:"back to the editor",sys:"__editor"}];
+  if(s.ending){const c=[{text:"play again",sys:"__again"},{text:"choose another adventure",sys:"__library"}];if(G.testing)c.unshift({text:"back to the editor",sys:"__editor"});return c}
+  return(s.choices||[]).filter(c=>c.text&&list(c.needs).every(f=>G.flags.has(f))&&!list(c.lacks).some(f=>G.flags.has(f)));
+}
+function live(){return visible().filter(c=>c.text.toLowerCase().startsWith(G.buf))}
+function acc(){const t=G.hits+G.misses;return t?Math.round(100*G.hits/t):100}
+function wpm(){const ms=G.ms+(G.t0?performance.now()-G.t0:0);return ms>1500?Math.round(G.hits/5/(ms/60000)):0}
+function renderPlay(){
+  const s=sc(),a=G.adv;
+  const coarse=matchMedia("(pointer:coarse)").matches&&!matchMedia("(pointer:fine)").matches;
+  let body;
+  if(!s){body=`<div class="story"><p>This choice leads to a scene called “${esc(G.scene)}”, which does not exist yet.</p></div>`}
+  else if(s.ending){const fd=(ps().endings[a.id]||[]).length,tot=endingIds(a).length;
+    body=`<span class="badge b-${esc(s.ending)}">${{good:"Best ending",mixed:"Hard-won ending",bad:"Story over"}[s.ending]||"The end"}</span><div class="story">${para(s.text)}${s.fact?`<div class="note"><strong>Field note</strong>${esc(s.fact)}</div>`:""}</div>
+    <div class="stats"><div><b>${acc()}%</b><span>accuracy</span></div><div><b>${wpm()}</b><span>words per minute</span></div><div><b>${G.notes}</b><span>field notes this run</span></div><div><b>${G.testing?"–":fd+"/"+tot}</b><span>endings found</span></div></div>`}
+  else body=`<div class="story">${para(s.text)}${s.fact?`<div class="note"><strong>Field note</strong>${esc(s.fact)}</div>`:""}</div>`;
+  app.innerHTML=`<section class="play"><div class="scene-art">${art(a.art,a.accent)}</div>
+  <div class="ptop"><h2>${esc(a.title)}</h2><div class="meter"><span>Accuracy <b id="mAcc">${acc()}%</b></span><span>Speed <b id="mW">${wpm()}</b> wpm</span></div><button class="ghost" data-act="${G.testing?"backEdit":"library"}">${G.testing?"Back to editor":"Save and leave"}</button></div>
+  ${s&&+s.timer>0&&s.timeout&&!s.ending?`<div class="timer"><i id="tbar"></i></div>`:""}
+  ${body}<div class="prompt">${s&&s.ending?"Type to continue":"Type a choice"}</div><div class="choices" id="choices"></div>
+  <div class="kb" id="kb"></div><div class="legend"><span><i style="background:var(--f1)"></i>little finger</span><span><i style="background:var(--f2)"></i>ring</span><span><i style="background:var(--f3)"></i>middle</span><span><i style="background:var(--f4)"></i>pointer</span></div>
+  ${coarse?`<div class="warn">This game needs a physical keyboard. Open it on a computer, or connect a keyboard to this tablet.</div>`:""}</section>`;
+  draw();
+}
+function para(t){return String(t||"").split(/\n\s*\n/).map(p=>`<p>${esc(p)}</p>`).join("")}
+function draw(){
+  const v=visible(),L=live(),b=G.buf;
+  $("#choices").innerHTML=v.map((c,i)=>{const t=c.text,on=L.includes(c);const typed=on?t.slice(0,b.length):"",nx=on?t.charAt(b.length):"",rest=on?t.slice(b.length+1):t;
+    return `<div class="ch ${b&&on?"on":""} ${b&&!on?"off":""}" data-i="${i}"><span class="t">${esc(typed)}</span>${nx?`<span class="n">${nx===" "?"&nbsp;":esc(nx)}</span>`:""}${esc(rest)}</div>`}).join("")||`<p class="small">No choices are available here. In the editor, add a choice or mark this scene as an ending.</p>`;
+  const next=new Set(L.map(c=>c.text.charAt(b.length).toLowerCase()).filter(Boolean));
+  const P=ps().keys;const weak=k=>{const v=P[k];return v&&v[0]+v[1]>=6&&v[0]/(v[0]+v[1])<.85};
+  const key=k=>`<div class="k ${next.has(k)?"hot":""} ${k==="f"||k==="j"?"bump":""} ${weak(k)?"weak":""}" style="--fc:var(--f${FING[k]||1})">${esc(k)}</div>`;
+  $("#kb").innerHTML=ROWS.map((r,i)=>`<div class="kr" style="margin-left:${i*18}px">${r.map(key).join("")}</div>`).join("")+`<div class="kr"><div class="k space ${next.has(" ")?"hot":""}" style="--fc:var(--ink)">space</div></div>`;
+  const ma=$("#mAcc"),mw=$("#mW");if(ma)ma.textContent=acc()+"%";if(mw)mw.textContent=wpm();
+}
+function mark(k,ok){const P=ps().keys;P[k]=P[k]||[0,0];P[k][ok?0:1]++}
+function commit(c){
+  G.locked=true;if(G.t0){G.ms+=performance.now()-G.t0;G.t0=0}
+  list(c.gives).forEach(f=>G.flags.add(f));saveStats();
+  const el=[...document.querySelectorAll(".ch")].find(e=>e.textContent.trim()===c.text.trim());if(el)el.classList.add("done");
+  G.token++;
+  setTimeout(()=>{
+    if(c.sys==="__again")return play(G.adv,G.adv.start,G.testing);
+    if(c.sys==="__library")return renderLibrary();
+    if(c.sys==="__editor")return renderEditor();
+    go(c.next)},320);
+}
+document.addEventListener("keydown",e=>{
+  if(view!=="play"||!G||G.locked)return;
+  if(e.target.closest&&e.target.closest("input,textarea,select"))return;
+  if(e.ctrlKey||e.metaKey||e.altKey)return;
+  if(e.key==="Backspace"){e.preventDefault();G.buf=G.buf.slice(0,-1);draw();return}
+  if(e.key.length!==1)return;
+  e.preventDefault();
+  const ch=e.key.toLowerCase(),L=live();if(!L.length)return;
+  if(!G.t0)G.t0=performance.now();
+  const nb=G.buf+ch,ok=L.filter(c=>c.text.toLowerCase().startsWith(nb));
+  if(ok.length){G.buf=nb;G.hits++;mark(ch,1);beep(true);const done=ok.find(c=>c.text.toLowerCase()===nb);draw();if(done)commit(done)}
+  else{G.misses++;new Set(L.map(c=>c.text.toLowerCase().charAt(G.buf.length))).forEach(k=>mark(k,0));beep(false);const box=$("#choices");box.classList.remove("shake");void box.offsetWidth;box.classList.add("shake");draw()}
+});
+
+/* ---------- editor ---------- */
+let E=null;
+function freeId(base){base=slug(base)||"adventure";let id=base,n=2;while(findAdv(id))id=base+"-"+(n++);return id}
+function newAdv(){return{id:freeId("new-adventure"),title:"Untitled adventure",era:"",blurb:"",art:"castle",accent:"#5a6fb0",published:false,start:"start",scenes:{start:{text:"Your story begins here.",fact:"",choices:[{text:"open the gate",next:"end"}]},end:{text:"The end.",ending:"good",choices:[]}}}}
+function openEditor(a,isNew){if(!isEditor)return signIn(()=>openEditor(a,isNew));E={adv:clone(a),sel:a.start,dirty:!!isNew,isNew:!!isNew,idTouched:false,base:isNew?null:a.updated,msg:isNew?"Not saved yet":"Saved on the server"};renderEditor()}
+async function saveToServer(force){
+  const a=E.adv,m=$("#savedMsg");
+  if(!validId(a.id)){if(m)m.textContent="Fix the file name first: lowercase letters, numbers and dashes.";return}
+  if(m)m.textContent="Saving…";
+  try{const r=await api("save",{adventure:a,base:force?force:E.base,isNew:E.isNew});
+    a.updated=r.updated;E.base=r.updated;E.isNew=false;E.dirty=false;E.msg="Saved on the server";
+    const i=ADVS.findIndex(x=>x.id===a.id),copy=clone(a);if(i>=0)ADVS[i]=copy;else ADVS.push(copy);
+    renderEditor();
+  }catch(e){
+    if(e.status===401){isEditor=false;editKey="";ls.set("ksq-key","");if(m)m.textContent="Not saved";return signIn(()=>saveToServer(force))}
+    if(e.data&&e.data.conflict){window._conflict=e.data.updated;if(m)m.textContent="Not saved";return modal(`<h3>This adventure changed on the server</h3><p>Someone saved it after you opened it, maybe in another tab. Keep your version and overwrite theirs, or throw away your changes and load theirs.</p><div class="row"><button class="pri" data-act="forceSave">Overwrite with mine</button><button data-act="loadServer">Load the server version</button><button data-act="close">Cancel</button></div>`)}
+    if(m)m.textContent="Not saved: "+e.message;
+  }
+}
+function issues(a){
+  const out=[],ids=Object.keys(a.scenes);
+  if(!a.scenes[a.start])out.push({s:null,m:"The starting scene is missing."});
+  const reach=new Set,q=[a.start];while(q.length){const id=q.pop();if(reach.has(id)||!a.scenes[id])continue;reach.add(id);const s=a.scenes[id];(s.choices||[]).forEach(c=>q.push(c.next));if(s.timeout)q.push(s.timeout)}
+  ids.forEach(id=>{const s=a.scenes[id];
+    if(!String(s.text||"").trim())out.push({s:id,m:"has no story text"});
+    if(!s.ending&&!(s.choices||[]).length)out.push({s:id,m:"has no choices and is not an ending"});
+    (s.choices||[]).forEach((c,i)=>{if(!c.text.trim())out.push({s:id,m:`choice ${i+1} has no text`});else if(!c.next||!a.scenes[c.next])out.push({s:id,m:`“${c.text}” leads nowhere`})});
+    const t=(s.choices||[]).map(c=>c.text.toLowerCase().trim());if(new Set(t).size<t.length)out.push({s:id,m:"has two identical choices"});
+    if(+s.timer>0&&!a.scenes[s.timeout])out.push({s:id,m:"has a timer but no scene for running out of time"});
+    if(!reach.has(id))out.push({s:id,m:"can't be reached from the start"});
+  });return out;
+}
+function opts(ids,v,extra){return extra+ids.map(id=>`<option value="${esc(id)}" ${id===v?"selected":""}>${esc(id)}</option>`).join("")}
+function renderEditor(){
+  view="editor";const a=E.adv;setAccent(a.accent);
+  if(!a.scenes[E.sel])E.sel=Object.keys(a.scenes)[0];
+  const ids=Object.keys(a.scenes),s=a.scenes[E.sel],iss=issues(a);
+  const bad=new Set(iss.map(x=>x.s));
+  const slist=ids.map(id=>{const x=a.scenes[id];const col=x.ending?`var(--${x.ending==="good"?"good":x.ending==="bad"?"bad":"mix"})`:bad.has(id)?"var(--mix)":"var(--line)";
+    return `<button data-act="pick" data-id="${esc(id)}" class="${id===E.sel?"sel":""}"><span>${id===a.start?"▸ ":""}${esc(id)}</span><span class="dot" style="background:${col}"></span></button>`}).join("");
+  const chs=(s.choices||[]).map((c,i)=>`<div class="chrow"><div><label for="ct${i}">Choice ${i+1}: what the player types</label><input id="ct${i}" data-c="${i}:text" value="${esc(c.text)}" autocomplete="off" spellcheck="true"></div>
+    <div><label for="cn${i}">Leads to</label><select id="cn${i}" data-c="${i}:next">${opts(ids,c.next,`<option value="">Choose a scene</option>`)}<option value="__new">+ New scene</option></select></div>
+    <button class="ghost" data-act="delChoice" data-i="${i}" aria-label="Remove choice ${i+1}">Remove</button>
+    <div class="adv"><div><label for="cq${i}">Only shown if player has</label><input id="cq${i}" data-c="${i}:needs" value="${esc(c.needs||"")}" placeholder="e.g. torch"></div><div><label for="cl${i}">Hidden if player has</label><input id="cl${i}" data-c="${i}:lacks" value="${esc(c.lacks||"")}"></div><div><label for="cg${i}">Gives the player</label><input id="cg${i}" data-c="${i}:gives" value="${esc(c.gives||"")}" placeholder="e.g. torch"></div></div></div>`).join("");
+  app.innerHTML=`<div class="wrap"><div class="edbar"><h2>${esc(a.title||"Untitled")}</h2><span class="saved" id="savedMsg">${esc(E.dirty?"Unsaved changes":E.msg)}</span>
+  <button class="pri" data-act="save">Save</button><button data-act="test" data-id="${esc(a.start)}">Play from start</button><button data-act="export">Export</button><button class="ghost" data-act="delAdv">Delete</button><button class="ghost" data-act="leaveEd">Done</button></div>
+  <div class="ed"><aside class="box"><h3>Adventure</h3>
+   <label class="pub"><input type="checkbox" id="mpub" data-pub ${a.published?"checked":""}> Published: players can see and play it</label>
+   <label for="mt">Title</label><input id="mt" data-m="title" value="${esc(a.title)}">
+   <label for="mid">File name on the server${E.isNew?"":" (fixed once saved)"}</label><input id="mid" data-m="id" value="${esc(a.id)}" ${E.isNew?"":"readonly"} autocomplete="off" spellcheck="false" style="font-family:'Atkinson Hyperlegible Mono',monospace">${E.isNew?`<span class="small">adventures/${esc(a.id)}.json. Lowercase letters, numbers and dashes.</span>`:""}
+   <label for="me">Place and time</label><input id="me" data-m="era" value="${esc(a.era)}" placeholder="e.g. Normandy · 1066">
+   <label for="mb">One-line pitch</label><textarea id="mb" data-m="blurb" style="min-height:70px">${esc(a.blurb)}</textarea>
+   <div class="grid3" style="grid-template-columns:minmax(0,1fr) minmax(0,1fr) 64px"><div><label for="ma">Picture</label><select id="ma" data-m="art">${Object.entries(ARTS).map(([k,v])=>`<option value="${k}" ${k===a.art?"selected":""}>${v}</option>`).join("")}</select></div>
+   <div><label for="ms">Starts at</label><select id="ms" data-m="start">${opts(ids,a.start,"")}</select></div><div><label for="mc">Colour</label><input id="mc" type="color" data-m="accent" value="${esc(a.accent||"#5a6fb0")}" style="padding:2px;height:44px"></div></div>
+   <h3 style="margin-top:20px">Scenes</h3><div class="slist">${slist}</div><button data-act="addScene" style="margin-top:8px;width:100%">+ Add scene</button>
+   <h3 style="margin-top:20px">Checks</h3>${iss.length?`<ul class="issues">${iss.map(x=>`<li data-act="pick" data-id="${esc(x.s||"")}">${x.s?`<b>${esc(x.s)}</b> `:""}${esc(x.m)}</li>`).join("")}</ul>`:`<p class="small">Every scene connects. Ready to play.</p>`}
+  </aside>
+  <section class="box"><div class="row"><h3 style="margin-right:auto">Scene</h3><button data-act="test" data-id="${esc(E.sel)}">Play from here</button><button class="ghost" data-act="delScene">Delete scene</button></div>
+   <label for="sid">Scene name (other scenes link to this)</label><input id="sid" data-f="id" value="${esc(E.sel)}" autocomplete="off">
+   <label for="stx">Story text</label><textarea id="stx" data-f="text" style="min-height:130px">${esc(s.text)}</textarea>
+   <label for="sfa">Field note: a true fact the player collects here (optional)</label><textarea id="sfa" data-f="fact" style="min-height:70px">${esc(s.fact||"")}</textarea>
+   <div class="grid3"><div><label for="sen">Ending</label><select id="sen" data-f="ending"><option value="">Not an ending</option>${["good","mixed","bad"].map(k=>`<option value="${k}" ${s.ending===k?"selected":""}>${{good:"Best ending",mixed:"Hard-won ending",bad:"Story over"}[k]}</option>`).join("")}</select></div>
+   <div><label for="sti">Timer in seconds</label><input id="sti" type="number" min="0" max="120" data-f="timer" value="${esc(s.timer||"")}" placeholder="none"></div>
+   <div><label for="sto">If time runs out, go to</label><select id="sto" data-f="timeout">${opts(ids,s.timeout,`<option value="">Choose a scene</option>`)}</select></div></div>
+   ${s.ending?`<p class="small">Endings don't need choices. The player is offered “play again” automatically.</p>`:`<h3 style="margin-top:22px">Choices</h3><p class="small">Players type the choice to pick it. Keep choices lowercase, 3 to 6 words, and about the same length, so the shortest one isn't always the easy pick. Avoid starting two choices with the same word. Timers start when the scene appears, so allow time to read.</p>${chs}<button data-act="addChoice" style="margin-top:12px">+ Add choice</button>`}
+  </section></div></div>`;
+}
+function dirty(){E.dirty=true;const m=$("#savedMsg");if(m)m.textContent="Unsaved changes"}
+function addScene(){let n=Object.keys(E.adv.scenes).length+1,id="scene-"+n;while(E.adv.scenes[id])id="scene-"+(++n);E.adv.scenes[id]={text:"",fact:"",choices:[]};return id}
+function renameScene(oldId,raw){
+  const a=E.adv,id=slug(raw);if(!id||id===oldId||a.scenes[id])return false;
+  const o={};Object.keys(a.scenes).forEach(k=>o[k===oldId?id:k]=a.scenes[k]);a.scenes=o;
+  if(a.start===oldId)a.start=id;Object.values(a.scenes).forEach(s=>{if(s.timeout===oldId)s.timeout=id;(s.choices||[]).forEach(c=>{if(c.next===oldId)c.next=id})});
+  E.sel=id;return true;
+}
+app.addEventListener("input",e=>{
+  if(view!=="editor")return;const t=e.target,a=E.adv,s=a.scenes[E.sel];
+  if(t.dataset.pub!==undefined){a.published=t.checked;dirty()}
+  else if(t.dataset.m==="id"){if(!E.isNew)return;const v=t.value.toLowerCase().replace(/[^a-z0-9-]/g,"");if(v!==t.value)t.value=v;a.id=v;E.idTouched=true;dirty()}
+  else if(t.dataset.m&&t.tagName!=="SELECT"){a[t.dataset.m]=t.value;if(t.dataset.m==="accent")setAccent(t.value);
+    if(t.dataset.m==="title"&&E.isNew&&!E.idTouched){a.id=freeId(t.value);const f=$("#mid");if(f)f.value=a.id}dirty()}
+  else if(t.dataset.f&&t.dataset.f!=="id"&&t.tagName!=="SELECT"){const f=t.dataset.f;if(f==="timer")s.timer=t.value?Math.max(0,+t.value):undefined;else s[f]=t.value;dirty()}
+  else if(t.dataset.c&&t.tagName!=="SELECT"){const[i,f]=t.dataset.c.split(":");s.choices[+i][f]=f==="text"?t.value.replace(/\s+/g," ").toLowerCase():t.value;if(f==="text"&&t.value!==s.choices[+i][f]){const p=t.selectionStart;t.value=s.choices[+i][f];t.setSelectionRange(p,p)}dirty()}
+});
+app.addEventListener("change",e=>{
+  if(view!=="editor")return;const t=e.target,a=E.adv,s=a.scenes[E.sel];
+  if(t.dataset.f==="id"){if(!renameScene(E.sel,t.value))t.value=E.sel;else{dirty();renderEditor()}return}
+  if(t.tagName!=="SELECT"){if(t.dataset.m==="title"||t.dataset.m==="id"||t.dataset.f==="text"||t.dataset.c)rerender();return}
+  if(t.dataset.m){a[t.dataset.m]=t.value}
+  else if(t.dataset.f){s[t.dataset.f]=t.value||undefined;if(t.dataset.f==="ending"&&t.value)s.choices=s.choices||[]}
+  else if(t.dataset.c){const[i,f]=t.dataset.c.split(":");if(t.value==="__new"){const id=addScene();s.choices[+i].next=id}else s.choices[+i][f]=t.value}
+  dirty();rerender();
+});
+/* re-render after focus has moved, then put focus back where the person went */
+function rerender(){setTimeout(()=>{if(view!=="editor")return;const f=document.activeElement&&document.activeElement.id;renderEditor();if(f){const n=document.getElementById(f);if(n)n.focus()}},0)}
+
+/* ---------- modal ---------- */
+function modal(html){$("#modal").innerHTML=`<div class="modal" data-act="closeBg"><div class="box" role="dialog" aria-modal="true">${html}</div></div>`;const f=$("#modal textarea,#modal input,#modal button");if(f)f.focus()}
+function closeModal(){$("#modal").innerHTML=""}
+function download(name,text){const u=URL.createObjectURL(new Blob([text],{type:"application/json"}));const l=document.createElement("a");l.href=u;l.download=name;document.body.appendChild(l);l.click();l.remove();setTimeout(()=>URL.revokeObjectURL(u),2000)}
+function confirmBox(title,text,act,label){modal(`<h3>${esc(title)}</h3><p>${esc(text)}</p><div class="row"><button class="pri" data-act="${act}">${esc(label)}</button><button data-act="close">Cancel</button></div>`)}
+function importAdv(txt){
+  let a;try{a=JSON.parse(txt)}catch(e){return "That isn't valid adventure JSON."}
+  if(!a||typeof a!=="object"||!a.scenes||typeof a.scenes!=="object"||!a.start)return "That file is missing scenes or a starting scene.";
+  a.title=a.title||"Imported adventure";
+  a.id=validId(a.id||"")&&!findAdv(a.id)?a.id:freeId(a.title);
+  a.published=false;delete a.updated;Object.values(a.scenes).forEach(s=>{s.choices=Array.isArray(s.choices)?s.choices:[]});
+  closeModal();openEditor(a,true);return null;
+}
+
+/* ---------- player data backup ---------- */
+function backup(){return{app:"keystone",kind:"player-data",version:1,exported:new Date().toISOString(),players,current:cur,sound,stats}}
+function mergeStats(a,b){/* combine two copies of one player's data, keeping the most complete of each part */
+  const o={keys:{},facts:{},endings:{},scores:{},saves:{}};
+  const ka=a.keys||{},kb=b.keys||{};new Set([...Object.keys(ka),...Object.keys(kb)]).forEach(k=>{const x=ka[k]||[0,0],y=kb[k]||[0,0];o.keys[k]=x[0]+x[1]>=y[0]+y[1]?x:y});
+  ["facts","endings"].forEach(f=>{const A=a[f]||{},B=b[f]||{};new Set([...Object.keys(A),...Object.keys(B)]).forEach(id=>o[f][id]=[...new Set([...(A[id]||[]),...(B[id]||[])])])});
+  const SA=a.scores||{},SB=b.scores||{};new Set([...Object.keys(SA),...Object.keys(SB)]).forEach(id=>{const m=new Map;[...(SA[id]||[]),...(SB[id]||[])].forEach(r=>m.set(r.t+"|"+r.scene,r));o.scores[id]=[...m.values()].sort((x,y)=>x.t-y.t).slice(-50)});
+  const VA=a.saves||{},VB=b.saves||{};new Set([...Object.keys(VA),...Object.keys(VB)]).forEach(id=>{const x=VA[id],y=VB[id];o.saves[id]=!x?y:!y?x:(x.t||0)>=(y.t||0)?x:y});
+  return o;
+}
+function applyData(d,mode){
+  if(!d||d.app!=="keystone"||!d.stats||typeof d.stats!=="object"||!Array.isArray(d.players))return "That isn't a Keystone Quest data file.";
+  const inPlayers=d.players.filter(p=>typeof p==="string"&&p.trim());
+  if(mode==="replace"){players=inPlayers.length?inPlayers:["Player 1"];stats=d.stats;cur=players.includes(d.current)?d.current:players[0];if(typeof d.sound==="boolean")sound=d.sound}
+  else{inPlayers.forEach(p=>{if(!players.includes(p))players.push(p);stats[p]=stats[p]?mergeStats(stats[p],d.stats[p]||{}):d.stats[p]||{}})}
+  ls.set("ks-players",players);ls.set("ks-cur",cur);ls.set("ks-stats",stats);ls.set("ks-sound",sound);
+  return null;
+}
+
+/* ---------- clicks ---------- */
+document.addEventListener("click",async e=>{
+  const el=e.target.closest("[data-act]");if(!el)return;const act=el.dataset.act,id=el.dataset.id;
+  if(act==="closeBg"&&e.target!==el)return;
+  switch(act){
+    case "library":saveStats();if(view==="editor"&&E&&E.dirty)return confirmBox("Leave the editor?","You have unsaved changes.","discard","Leave without saving");return renderLibrary();
+    case "discard":closeModal();E.dirty=false;return renderLibrary();
+    case "sound":sound=!sound;ls.set("ks-sound",sound);return renderPlayers();
+    case "play":return play(findAdv(id));
+    case "resume":return play(findAdv(id),null,false,ps().saves[id]);
+    case "dataOut":return download("keystone-quest-data-"+new Date().toISOString().slice(0,10)+".json",JSON.stringify(backup(),null,2));
+    case "dataIn":modal(`<h3>Import player data</h3><p class="small">Choose a Keystone Quest data file, or paste its text.</p><input type="file" accept=".json,application/json" id="impFile"><textarea id="impTxt" style="margin-top:10px" placeholder="Paste here"></textarea>
+      <label><input type="radio" name="imode" value="merge" checked style="width:auto;margin-right:8px">Merge with the players already here</label><label><input type="radio" name="imode" value="replace" style="width:auto;margin-right:8px">Replace everything in this browser</label>
+      <div class="row" style="margin-top:12px"><button class="pri" data-act="dataGo">Import</button><button data-act="close">Cancel</button><span class="small" id="impMsg"></span></div>`);
+      $("#impFile").addEventListener("change",ev=>{const f=ev.target.files[0];if(f)f.text().then(t=>{$("#impTxt").value=t})});return;
+    case "dataGo":{let d;try{d=JSON.parse($("#impTxt").value)}catch(x){$("#impMsg").textContent="That isn't valid data.";return}
+      const mode=(document.querySelector("input[name=imode]:checked")||{}).value;
+      if(mode==="replace"&&!el.dataset.sure){el.dataset.sure="1";el.textContent="Yes, replace everything";$("#impMsg").textContent="This erases the current profiles in this browser.";return}
+      const err=applyData(d,mode);if(err){$("#impMsg").textContent=err;return}
+      closeModal();renderPlayers();return renderLibrary()}
+    case "copy":{const a=clone(findAdv(id));a.title+=" (copy)";a.id=freeId(a.title);a.published=false;delete a.updated;return openEditor(a,true)}
+    case "edit":return openEditor(findAdv(id));
+    case "reload":loadState="loading";renderLibrary();await loadAdventures();return renderLibrary();
+    case "signIn":return signIn(()=>{if(view==="library")renderLibrary()});
+    case "signInGo":{const k=$("#ek").value;if(!k)return;editKey=k;try{await api("auth");ls.set("ksq-key",k);closeModal();await loadAdventures();const f=window._afterSignIn;window._afterSignIn=null;if(view==="library")renderLibrary();if(f)f()}catch(x){editKey="";$("#ekMsg").textContent=x.status===401?"That password isn't right.":x.message}return}
+    case "signOut":if(view==="editor"&&E&&E.dirty)return confirmBox("Sign out of editing?","You have unsaved changes.","signOutYes","Sign out without saving");
+    case "signOutYes":closeModal();editKey="";isEditor=false;ls.set("ksq-key","");await loadAdventures();return renderLibrary();
+    case "forceSave":closeModal();return saveToServer(window._conflict);
+    case "loadServer":closeModal();await loadAdventures();{const a=findAdv(E.adv.id);E.dirty=false;return a?openEditor(a):renderLibrary()}
+    case "new":if(!isEditor)return signIn(()=>openEditor(newAdv(),true));if(view==="editor"&&E&&E.dirty)return confirmBox("Start a new adventure?","You have unsaved changes in this one.","newForce","Discard and start new");return openEditor(newAdv(),true);
+    case "newForce":closeModal();return openEditor(newAdv(),true);
+    case "pick":if(id){E.sel=id;renderEditor()}return;
+    case "addScene":E.sel=addScene();dirty();return renderEditor();
+    case "addChoice":E.adv.scenes[E.sel].choices.push({text:"",next:""});dirty();renderEditor();{const ins=document.querySelectorAll("[data-c$=':text']");if(ins.length)ins[ins.length-1].focus()}return;
+    case "delChoice":E.adv.scenes[E.sel].choices.splice(+el.dataset.i,1);dirty();return renderEditor();
+    case "delScene":if(Object.keys(E.adv.scenes).length<2)return;return confirmBox("Delete this scene?",`“${E.sel}” will be removed. Choices that led here will need a new destination.`,"delSceneYes","Delete scene");
+    case "delSceneYes":delete E.adv.scenes[E.sel];if(E.adv.start===E.sel)E.adv.start=Object.keys(E.adv.scenes)[0];closeModal();dirty();return renderEditor();
+    case "test":E.returnTo=E.sel;return play(clone(E.adv),id,true);
+    case "backEdit":return renderEditor();
+    case "save":return saveToServer();
+    case "leaveEd":if(E.dirty)return confirmBox("Leave the editor?","You have unsaved changes.","discard","Leave without saving");return renderLibrary();
+    case "delAdv":if(E.isNew){return confirmBox("Discard this adventure?","It hasn't been saved to the server yet.","discard","Discard")}return confirmBox("Delete this adventure?",`“${E.adv.title}” will be removed from the game. A copy is kept on the server in adventures/_backups/.`,"delAdvYes","Delete adventure");
+    case "delAdvYes":try{await api("delete",{id:E.adv.id});ADVS=ADVS.filter(a=>a.id!==E.adv.id);closeModal();E.dirty=false;return renderLibrary()}catch(x){closeModal();const m=$("#savedMsg");if(m)m.textContent="Not deleted: "+x.message;return}
+    case "export":return download((E.adv.id||"adventure")+".json",JSON.stringify(E.adv,null,2));
+    case "import":modal(`<h3>Import an adventure</h3><p class="small">Choose an exported .json file, or paste its text. It opens in the editor as an unpublished draft until you save and publish it.</p><input type="file" accept=".json,application/json" id="impFile"><textarea id="impTxt" style="margin-top:10px" placeholder="Paste here"></textarea><div class="row" style="margin-top:12px"><button class="pri" data-act="impGo">Open in editor</button><button data-act="close">Cancel</button><span class="small" id="impMsg"></span></div>`);
+      $("#impFile").addEventListener("change",ev=>{const f=ev.target.files[0];if(!f)return;f.text().then(t=>{$("#impTxt").value=t})});return;
+    case "impGo":{const err=importAdv($("#impTxt").value);if(err)$("#impMsg").textContent=err;return}
+    case "close":case "closeBg":return closeModal();
+  }
+});
+$("#player").addEventListener("change",e=>{
+  if(e.target.value==="__add"){renderPlayers();modal(`<h3>Add a player</h3><label for="pn">Name</label><input id="pn" maxlength="24" autocomplete="off"><div class="row" style="margin-top:12px"><button class="pri" data-act="addP">Add</button><button data-act="close">Cancel</button></div>`);return}
+  saveStats();cur=e.target.value;ls.set("ks-cur",cur);if(view==="play"&&!(G&&G.testing))return renderLibrary();if(view==="library")renderLibrary();
+});
+document.addEventListener("click",e=>{if(e.target.closest("[data-act=addP]")){const n=$("#pn").value.trim();if(n&&!players.includes(n)){players.push(n);ls.set("ks-players",players)}if(n){cur=n;ls.set("ks-cur",cur)}closeModal();renderPlayers();if(view==="library")renderLibrary()}});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&$("#modal").innerHTML)closeModal();if(e.key==="Enter"&&e.target.id==="pn")$("[data-act=addP]").click();if(e.key==="Enter"&&e.target.id==="ek")$("[data-act=signInGo]").click()});
+
+renderPlayers();renderLibrary();loadAdventures().then(()=>{if(view==="library")renderLibrary()});
+}
+</script>
+</body>
+</html>

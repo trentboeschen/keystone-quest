@@ -1,0 +1,226 @@
+{
+  "id": "pompeii",
+  "title": "Escape from Pompeii",
+  "era": "Bay of Naples · 79 CE",
+  "blurb": "Mount Vesuvius is waking up. Get your family out of the city before it is buried.",
+  "art": "volcano",
+  "accent": "#b8352a",
+  "published": true,
+  "updated": 1794774099061,
+  "start": "start",
+  "scenes": {
+    "start": {
+      "text": "Pompeii, 79 CE. You are thirteen, apprenticed to Rufus the baker. For four days the ground has shivered, and this morning the dogs will not stop howling. Rufus laughs it off. Campania always shakes.",
+      "fact": "Pompeii was a busy Roman town of roughly 10,000 to 12,000 people. A big earthquake in 62 CE damaged it badly, and some buildings were still being repaired 17 years later.",
+      "choices": [
+        {
+          "text": "light the bread ovens",
+          "next": "ovens"
+        },
+        {
+          "text": "fetch water for the dough",
+          "next": "fountain"
+        }
+      ]
+    },
+    "ovens": {
+      "text": "You rake glowing coals into the domed oven and slide in the round loaves, each one scored into eight wedges. Around midday a deep boom rattles the shelves and shakes flour into the air.",
+      "fact": "Archaeologists found 81 loaves of bread in one Pompeii oven, turned to charcoal but still marked into wedges.",
+      "choices": [
+        {
+          "text": "run out into the street",
+          "next": "blast"
+        }
+      ]
+    },
+    "fountain": {
+      "text": "The street fountain, usually gushing, is barely a trickle. Neighbours grumble that the pipes have cracked again. Then, around midday, a boom rolls over the town like thunder.",
+      "fact": "An aqueduct brought water to Pompeii. Lead pipes carried it to public fountains, the baths and wealthy houses.",
+      "choices": [
+        {
+          "text": "run out into the street",
+          "next": "blast"
+        }
+      ]
+    },
+    "blast": {
+      "text": "Above the vineyards on Vesuvius, a column of smoke is climbing higher than anything you have ever seen. At the top it spreads out like the branches of a pine tree. People stand frozen in the street.",
+      "fact": "Pliny the Younger watched from Misenum, across the bay. He wrote that the cloud was shaped like an umbrella pine: a tall trunk spreading into branches.",
+      "choices": [
+        {
+          "text": "run home to your family",
+          "next": "home"
+        },
+        {
+          "text": "climb a roof to look closer",
+          "next": "roof"
+        }
+      ]
+    },
+    "roof": {
+      "text": "From the bakery roof you can see the whole bay. The cloud is miles high and drifting your way. The first stones patter onto the tiles: grey, and light as a sponge.",
+      "fact": "The eruption column rose more than 30 kilometres into the sky, about three times higher than a passenger jet flies.",
+      "choices": [
+        {
+          "text": "climb down and run home",
+          "next": "home",
+          "gives": "late"
+        }
+      ]
+    },
+    "home": {
+      "text": "Your mother is wrapping bread in cloth and your little brother is crying. Pumice is falling now, rattling on the roof and piling up in the courtyard. The sky to the south is going dark.",
+      "fact": "Pumice is frothy volcanic rock, full of air bubbles. It fell on Pompeii like hail for about 18 hours.",
+      "choices": [
+        {
+          "text": "gather food and leave now",
+          "next": "streets"
+        },
+        {
+          "text": "bar the door and wait it out",
+          "next": "wait"
+        }
+      ]
+    },
+    "wait": {
+      "text": "Hours pass. The pumice does not stop. It drifts against the door, and above you the roof beams begin to creak.",
+      "fact": "Pumice piled up nearly three metres deep in Pompeii. Its weight made many roofs collapse on the people sheltering below.",
+      "timer": 20,
+      "timeout": "collapse",
+      "choices": [
+        {
+          "text": "get out before the roof falls",
+          "next": "streets",
+          "gives": "late"
+        }
+      ]
+    },
+    "collapse": {
+      "text": "With a crack like a whip, part of the roof gives way. Dust everywhere. You drag your brother free, and the three of you squeeze out through a window into the darkening street.",
+      "choices": [
+        {
+          "text": "find a way out of town",
+          "next": "streets",
+          "gives": "late"
+        }
+      ]
+    },
+    "streets": {
+      "text": "The afternoon has turned as black as night. People hurry past with lamps and torches, carrying bundles, babies and birdcages. Stones bounce off your shoulders.",
+      "fact": "Pliny wrote that his uncle's group tied pillows onto their heads with cloth to protect themselves from the falling stones.",
+      "choices": [
+        {
+          "text": "tie cushions on and go south",
+          "next": "road",
+          "gives": "cushions"
+        },
+        {
+          "text": "run straight to the harbor",
+          "next": "harbor"
+        },
+        {
+          "text": "go back for the coin box",
+          "next": "coins"
+        }
+      ]
+    },
+    "harbor": {
+      "text": "At the Marine Gate a crowd is pushing toward the shore. The sea is churning and strange, pulling back from the beach. A few boats bob far out, unable or unwilling to come in.",
+      "fact": "Pliny the Elder, commander of the Roman fleet, sailed across the bay to rescue people. Debris in the water stopped him landing near the mountain, so he went on to Stabiae.",
+      "choices": [
+        {
+          "text": "wait here for a boat",
+          "next": "shoreEnd"
+        },
+        {
+          "text": "follow the coast road south",
+          "next": "road"
+        }
+      ]
+    },
+    "coins": {
+      "text": "Your family's savings are buried under the kitchen floor. You dig with your hands in the dark while the house groans around you. Your mother is shouting your name from the street.",
+      "fact": "Many victims were found carrying coins, jewellery and keys: things they hoped to need when it was over.",
+      "timer": 15,
+      "timeout": "trapped",
+      "choices": [
+        {
+          "text": "leave the coins and run",
+          "next": "road",
+          "gives": "late"
+        }
+      ]
+    },
+    "road": {
+      "text": "Outside the walls, the road south is jammed with carts, mules and people on foot, all wading through pumice up to their ankles. Some of the falling stones are as big as a fist.",
+      "fact": "Most of Pompeii's people probably escaped in the first hours. About 1,150 bodies have been found so far.",
+      "choices": [
+        {
+          "text": "walk on under our cushions",
+          "next": "night",
+          "needs": "cushions"
+        },
+        {
+          "text": "take cover under a cart",
+          "next": "cart"
+        }
+      ]
+    },
+    "cart": {
+      "text": "You crouch under an abandoned cart while stones drum on the planks for what feels like hours. When the fall finally slows, the road is empty. You have lost precious time.",
+      "choices": [
+        {
+          "text": "start walking again",
+          "next": "night",
+          "gives": "late"
+        }
+      ]
+    },
+    "night": {
+      "text": "You walk all night by the light of one small lamp, past farms and shuttered villas. Behind you, lightning flickers inside the cloud over the mountain.",
+      "fact": "Two letters from Pliny the Younger to the historian Tacitus are the only eyewitness account of the eruption that survives.",
+      "choices": [
+        {
+          "text": "keep going until morning",
+          "next": "dawn"
+        }
+      ]
+    },
+    "dawn": {
+      "text": "Grey morning. You look back. A glowing wall of ash is pouring down the side of Vesuvius, faster than any horse, rolling across the land toward Pompeii.",
+      "fact": "Early on the second morning, pyroclastic surges, avalanches of scorching gas and ash, swept into Pompeii. No one still in the town survived them.",
+      "timer": 12,
+      "timeout": "survivedHard",
+      "choices": [
+        {
+          "text": "climb the hill away from it",
+          "next": "survived"
+        }
+      ]
+    },
+    "survived": {
+      "ending": "good",
+      "text": "From the hilltop you watch the cloud swallow the town where you were born. By evening you reach Nuceria, grey with ash and exhausted. All three of you are alive. Pompeii is gone.",
+      "fact": "Researchers have traced survivors who resettled in nearby cities such as Naples, Cumae and Puteoli. Pompeii stayed buried until excavations began in 1748.",
+      "choices": []
+    },
+    "survivedHard": {
+      "ending": "mixed",
+      "text": "You freeze for a moment too long. Hot, choking dust from the edge of the cloud sweeps over the road. Coughing and half-blind, you stumble on until the air clears. You survive, but you will carry the scars.",
+      "fact": "The eruption is usually dated 24 August, but a charcoal inscription found in 2018 suggests it actually happened in autumn, probably October.",
+      "choices": []
+    },
+    "shoreEnd": {
+      "ending": "bad",
+      "text": "You stay by the water with hundreds of others, waiting for a rescue that never comes. Before dawn the glowing cloud reaches the shore. Your story ends here, like so many others in Pompeii.",
+      "fact": "At nearby Herculaneum, around 300 people sheltered in boat sheds by the beach, waiting for rescue. Archaeologists found their remains in the 1980s and 1990s.",
+      "choices": []
+    },
+    "trapped": {
+      "ending": "bad",
+      "text": "The roof comes down before you reach the door. Nearly 2,000 years later, archaeologists will find the coin box beside you.",
+      "fact": "Victims' bodies left hollow spaces in the hardened ash. In 1863 Giuseppe Fiorelli filled them with plaster, making the famous casts.",
+      "choices": []
+    }
+  }
+}

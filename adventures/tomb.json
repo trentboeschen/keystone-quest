@@ -1,0 +1,237 @@
+{
+  "id": "tomb",
+  "title": "The Boy King's Tomb",
+  "era": "Valley of the Kings · 1922",
+  "blurb": "Join Howard Carter's team in the season that uncovers Tutankhamun. Find the tomb, then save its secrets.",
+  "art": "desert",
+  "accent": "#0f8486",
+  "published": true,
+  "updated": 1794774099062,
+  "start": "start",
+  "scenes": {
+    "start": {
+      "text": "Valley of the Kings, Egypt, November 1922. You are the youngest assistant on Howard Carter's dig. After five fruitless years, Lord Carnarvon is paying for one last season. Carter asks where you would dig.",
+      "fact": "The Valley of the Kings holds more than 60 tombs, cut into the rock for pharaohs of Egypt's New Kingdom from about 1500 BCE.",
+      "choices": [
+        {
+          "text": "dig under the old stone huts",
+          "next": "steps"
+        },
+        {
+          "text": "search the high cliffs again",
+          "next": "cliffs"
+        }
+      ]
+    },
+    "cliffs": {
+      "text": "You spend three days scrambling over the cliffs. You find chisel marks and ancient rubbish, but every crack was searched by explorers long before you. Carter taps his map: the huts.",
+      "fact": "Nearly every royal tomb in the valley was robbed in ancient times. By 1922 many experts believed there was nothing left to find.",
+      "choices": [
+        {
+          "text": "dig under the old stone huts",
+          "next": "steps"
+        }
+      ]
+    },
+    "steps": {
+      "text": "On the fourth day a boy runs up shouting. Beneath the huts, a step has been cut into the bedrock. By evening the workmen have cleared sixteen steps leading down to a doorway sealed with plaster.",
+      "fact": "The first step was found on 4 November 1922, under huts built for the workers who cut the nearby tomb of Ramesses VI.",
+      "choices": [
+        {
+          "text": "break the doorway open now",
+          "next": "rush"
+        },
+        {
+          "text": "copy the seals on the plaster",
+          "next": "seals"
+        }
+      ]
+    },
+    "rush": {
+      "text": "Carter catches your wrist. A tomb is not a treasure chest, he says. He orders the stairway filled back in and sends a telegram to Lord Carnarvon in England. Now you wait.",
+      "fact": "Carter really did rebury the stairway and wait. Carnarvon arrived in Luxor on 23 November, nearly three weeks later.",
+      "choices": [
+        {
+          "text": "copy the seals on the plaster",
+          "next": "seals"
+        }
+      ]
+    },
+    "seals": {
+      "text": "Pressed into the plaster are oval stamps: a jackal above nine bound captives, the seal of the royal cemetery, and a king's name inside a cartouche. Carter reads it aloud. You copy it into your notebook.",
+      "fact": "A cartouche is an oval loop drawn around a royal name. Nebkheperure was the throne name of Tutankhamun.",
+      "choices": [
+        {
+          "text": "write the name nebkheperure",
+          "next": "passage",
+          "gives": "notes"
+        }
+      ]
+    },
+    "passage": {
+      "text": "Behind the door, a sloping passage is packed with limestone chips. Someone once dug a tunnel through the top of the fill, and it was later packed again. Robbers were here, long ago.",
+      "fact": "Robbers broke into the tomb at least twice soon after the burial. Officials tidied up, refilled the passage and resealed the doors.",
+      "choices": [
+        {
+          "text": "clear the rubble basket by basket",
+          "next": "door2"
+        },
+        {
+          "text": "dig a quick tunnel through",
+          "next": "tunnel"
+        }
+      ]
+    },
+    "tunnel": {
+      "text": "You burrow along the top of the fill. Chips start to slide. The loose rock above your head shifts and groans.",
+      "timer": 10,
+      "timeout": "tunnelFall",
+      "choices": [
+        {
+          "text": "back out and brace the fill",
+          "next": "door2"
+        }
+      ]
+    },
+    "tunnelFall": {
+      "text": "Rubble pours down. Nobody is hurt, but broken pots and jar seals mixed into the fill are crushed, and the clues they held are lost.",
+      "fact": "Even rubbish in a passage can be evidence. Jar seals and pottery help archaeologists date what happened and when.",
+      "choices": [
+        {
+          "text": "clear the rest with baskets",
+          "next": "door2",
+          "gives": "damage"
+        }
+      ]
+    },
+    "door2": {
+      "text": "On 26 November you reach a second sealed door at the end of the passage. Carter chisels a small hole in the top corner. Warm air flows out and makes his candle flicker.",
+      "fact": "Carter held up a candle to test for bad air. When Carnarvon asked whether he could see anything, Carter answered that he saw wonderful things.",
+      "choices": [
+        {
+          "text": "hold the candle to the hole",
+          "next": "antechamber"
+        }
+      ]
+    },
+    "antechamber": {
+      "text": "As your eyes adjust, shapes rise out of the dark: gilded couches with animal heads, a heap of chariot wheels, painted boxes, and two black statues guarding a sealed wall. Everywhere, the glint of gold.",
+      "fact": "The tomb held more than 5,000 objects. Since November 2025, the whole collection has been displayed together at the Grand Egyptian Museum near Giza.",
+      "choices": [
+        {
+          "text": "photograph everything in place",
+          "next": "record",
+          "gives": "record"
+        },
+        {
+          "text": "lift out the best pieces now",
+          "next": "grab",
+          "gives": "damage"
+        }
+      ]
+    },
+    "grab": {
+      "text": "You lift a beaded sandal. Its ancient threads have rotted away, and hundreds of tiny beads pour through your fingers onto the floor. Carter goes very quiet.",
+      "fact": "Linen and thread had decayed over 3,000 years. Lifted carelessly, beaded clothes simply fell apart.",
+      "choices": [
+        {
+          "text": "stop and record it all first",
+          "next": "record",
+          "gives": "record"
+        }
+      ]
+    },
+    "record": {
+      "text": "Harry Burton sets up his camera and electric lights. Every object gets a number, a photograph and an index card before anyone touches it. It will take years.",
+      "fact": "Burton took about 3,400 photographs of the tomb. Carter's cards and Burton's pictures are still studied today.",
+      "choices": [
+        {
+          "text": "coat fragile pieces in wax",
+          "next": "wax",
+          "gives": "conserved"
+        },
+        {
+          "text": "pack them in boxes right away",
+          "next": "pack",
+          "gives": "damage"
+        }
+      ]
+    },
+    "wax": {
+      "text": "Alfred Lucas, the team's chemist, shows you how to brush melted paraffin wax onto crumbling wood and beadwork so it holds together for the journey.",
+      "fact": "The team turned the empty tomb of Seti II into a laboratory, where objects were cleaned and strengthened before being shipped to Cairo.",
+      "choices": [
+        {
+          "text": "carry them out on stretchers",
+          "next": "burial"
+        }
+      ]
+    },
+    "pack": {
+      "text": "You wrap the pieces in cotton and pack them tight. When a painted box reaches the lab, flakes of its paint are lying loose in the bottom.",
+      "choices": [
+        {
+          "text": "carry the rest to the lab",
+          "next": "burial"
+        }
+      ]
+    },
+    "burial": {
+      "text": "February 1923. The sealed wall between the guardian statues comes down. Behind it, a gilded shrine fills almost the whole room. Along its side runs a line of hieroglyphs. All the birds face to the left.",
+      "fact": "Hieroglyphs can run left to right or right to left. People and animals always face the start of the line.",
+      "choices": [
+        {
+          "text": "read it from left to right",
+          "next": "coffins"
+        },
+        {
+          "text": "read it from right to left",
+          "next": "misread"
+        }
+      ]
+    },
+    "misread": {
+      "text": "The words make no sense. Carter smiles. The creatures always look toward the beginning of the line, he reminds you. You try again from the other end.",
+      "choices": [
+        {
+          "text": "read it from left to right",
+          "next": "coffins"
+        }
+      ]
+    },
+    "coffins": {
+      "text": "Inside the first shrine is another, then another, then a fourth, and at last a stone sarcophagus. In 1925 the team opens the last of three nested coffins. Inside lies the king, wearing a mask of gold.",
+      "fact": "The innermost coffin is made of solid gold and weighs about 110 kilograms, heavier than two grown adults.",
+      "choices": [
+        {
+          "text": "share your careful records",
+          "next": "greatEnd",
+          "needs": "conserved",
+          "lacks": "damage"
+        },
+        {
+          "text": "share the records you have",
+          "next": "mixedEnd",
+          "needs": "damage"
+        },
+        {
+          "text": "share your notes and photos",
+          "next": "mixedEnd",
+          "lacks": "conserved,damage"
+        }
+      ]
+    },
+    "greatEnd": {
+      "ending": "good",
+      "text": "Your notebooks, Burton's photographs and the carefully preserved objects make this one of the best-recorded excavations in history. A century later, scholars still study the cards you helped write.",
+      "fact": "Carter spent about ten years clearing and recording the tomb. Tutankhamun's mummy still lies in the tomb today, in the valley where he was buried.",
+      "choices": []
+    },
+    "mixedEnd": {
+      "ending": "mixed",
+      "text": "It is still the discovery of the century, but some clues are lost for good: crushed jar seals, scattered beads, flaking paint. You learn that in archaeology, hurrying destroys history.",
+      "fact": "Lord Carnarvon died in April 1923 from an infected mosquito bite, which started the legend of a curse. Carter lived until 1939.",
+      "choices": []
+    }
+  }
+}

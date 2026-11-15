@@ -9,7 +9,7 @@ A typing game for kids: branching history adventures where you type your choices
 | `index.html` | The game and the adventure editor. |
 | `api.php` | Reads and writes the adventure files. |
 | `config.php-sample` | Template for your settings. Copy it to `config.php`. |
-| `config.php` | Your editor password and backup setting. You create it; git ignores it, so your password never gets committed. |
+| `config.php` | Your editor password, backup count and whether players see their typing speed. You create it; git ignores it, so your password never gets committed. |
 | `adventures/` | One `.json` file per adventure. The game loads every valid file in here; there is no manifest. |
 | `.claude/skills/write-adventure/` | A Claude Code skill for researching and writing new adventures, with a validator. |
 | `adventures/.htaccess` | Stops people downloading the files directly, so drafts stay hidden (Apache only). |
@@ -24,6 +24,16 @@ A typing game for kids: branching history adventures where you type your choices
    ```
 3. Make sure PHP can write to the `adventures/` folder. On most hosts that means permissions `775` (or `777` on some shared hosts) on `adventures/`.
 4. Open the folder's URL in a browser. Click **Editor** and enter your password to create and edit adventures.
+
+Settings in `config.php`:
+
+| Setting | What it does |
+|---|---|
+| `EDIT_PASSWORD` | Password for creating and editing adventures. `''` turns editing off. |
+| `BACKUPS_PER_ADVENTURE` | How many earlier versions of each adventure to keep. |
+| `SHOW_TYPING_SPEED` | `true` shows words per minute to players; `false` hides it everywhere. Speed is still recorded in their data either way, so you can switch it back on later without losing anything. |
+
+If you set up from an older `config.php` that lacks `SHOW_TYPING_SPEED`, speed is shown.
 
 Until `config.php` exists, the game shows a setup message instead of the adventures.
 
@@ -140,4 +150,12 @@ Write adventure timers for Normal. The validator checks them against a beginner'
 
 ## Player data
 
-Player profiles, difficulty, saved progress, scores and key stats stay in each player's browser (localStorage), not on the server. Use **Download data** and **Import data** in the player panel to back them up or move them to another computer.
+The game records each player's typing speed in three places:
+- overall, across everything they've typed
+- in each finished run's score
+- in their in-progress save
+
+Speed counts only correct keystrokes during active typing, so time spent reading a scene doesn't drag it down.
+
+
+Player profiles, difficulty, saved progress, scores, key stats and typing speed stay in each player's browser (localStorage), not on the server. Use **Download data** and **Import data** in the player panel to back them up or move them to another computer.

@@ -85,7 +85,7 @@ details li{font-size:14px;margin:6px 0;color:var(--mute)}
 @keyframes sh{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
 .badge{display:inline-block;font-weight:700;font-size:14px;border-radius:999px;padding:4px 12px;color:#fff}
 .b-good{background:var(--good)}.b-mixed{background:var(--mix)}.b-bad{background:var(--bad)}
-.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:18px 0}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin:18px 0}
 .stats div{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
 .stats b{display:block;font-size:26px;font-variant-numeric:tabular-nums}
 .stats span{font-size:13px;color:var(--mute)}
@@ -169,6 +169,9 @@ let players=ls.get("ks-players",["Player 1"]);let cur=ls.get("ks-cur",players[0]
 let stats=ls.get("ks-stats",{});
 const ps=()=>{const p=stats[cur]||(stats[cur]={});["keys","facts","endings","scores","saves"].forEach(k=>{if(!p[k]||typeof p[k]!=="object")p[k]={}});return p};
 const saveStats=()=>ls.set("ks-stats",stats);
+/* overall typing speed across all play: correct keystrokes and active typing time */
+const typing=()=>{const P=ps();if(!P.typing||typeof P.typing!=="object")P.typing={chars:0,ms:0};return P.typing};
+const overallWpm=()=>{const t=typing();return t.ms>3000?Math.round(t.chars/5/(t.ms/60000)):0};
 /* Difficulty scales every timed scene. Adventures are written with Normal timings. */
 const DIFF={untimed:{label:"No timers",mult:0,note:"Timed scenes wait for you."},relaxed:{label:"Relaxed",mult:1.5,note:"Timers run 50% longer."},normal:{label:"Normal",mult:1,note:"Timers as the adventure was written."},challenge:{label:"Challenging",mult:.7,note:"Timers are 30% shorter."},expert:{label:"Expert",mult:.5,note:"Timers are half as long."}};
 const diffKey=()=>DIFF[ps().difficulty]?ps().difficulty:"normal";
@@ -177,6 +180,7 @@ let sound=ls.get("ks-sound",true);
 
 /* ---------- adventures live on the server: adventures/*.json, read and written through api.php ---------- */
 let ADVS=[],loadState="loading",loadErr="",isEditor=false,editingOn=true;
+let SHOW_SPEED=true; /* SHOW_TYPING_SPEED in config.php. Speed is always recorded; this only controls whether players see it. */
 let editKey=ls.get("ksq-key","");
 const allAdv=()=>ADVS;
 const findAdv=id=>ADVS.find(a=>a.id===id);
@@ -189,7 +193,7 @@ async function api(action,body){
   return d;
 }
 async function loadAdventures(){
-  try{const d=await api("list");ADVS=d.adventures||[];isEditor=!!d.editor;editingOn=d.editing!==false;
+  try{const d=await api("list");ADVS=d.adventures||[];isEditor=!!d.editor;editingOn=d.editing!==false;SHOW_SPEED=!(d.settings&&d.settings.showSpeed===false);
     if(editKey&&!isEditor){editKey="";ls.set("ksq-key","")}loadState="ok"}
   catch(e){loadState="error";loadErr=e.status?e.message:"Couldn't reach the server. Check that api.php is uploaded and PHP is running."}
   renderPlayers();
@@ -217,13 +221,13 @@ function renderLibrary(){
   const keys=Object.entries(P.keys).filter(([k,v])=>v[0]+v[1]>=6).map(([k,v])=>[k,v[0]/(v[0]+v[1])]).sort((a,b)=>a[1]-b[1]).slice(0,6).filter(x=>x[1]<.97);
   const totalH=Object.values(P.keys).reduce((s,v)=>s+v[0],0),totalM=Object.values(P.keys).reduce((s,v)=>s+v[1],0);
   const cards=allAdv().map(a=>{const found=(P.endings[a.id]||[]).length,tot=endingIds(a).length,sv=P.saves[a.id],runs=P.scores[a.id]||[];
-    const best=runs.length?`Best run: ${Math.max(...runs.map(r=>r.acc))}% accuracy · ${Math.max(...runs.map(r=>r.wpm))} wpm · ${runs.length} ${runs.length===1?"run":"runs"}`:"";
+    const best=runs.length?`Best run: ${Math.max(...runs.map(r=>r.acc))}% accuracy${SHOW_SPEED?` · ${Math.max(...runs.map(r=>r.wpm||0))} wpm`:""} · ${runs.length} ${runs.length===1?"run":"runs"}`:"";
     const canResume=sv&&a.scenes[sv.scene];
     return `<article class="card" style="--acc:${esc(a.accent||"#b8352a")}"><div class="art">${art(a.art,a.accent)}</div><div class="body"><span class="era">${esc(a.era)}</span><h3>${esc(a.title)}</h3><p>${esc(a.blurb)}</p><span class="small">Endings found: ${found} of ${tot}</span>${best?`<span class="small">${best}</span>`:""}${canResume?`<span class="small">In progress, saved ${new Date(sv.t).toLocaleDateString()}</span>`:""}<div class="row">${canResume?`<button class="pri" data-act="resume" data-id="${esc(a.id)}">Continue</button><button data-act="play" data-id="${esc(a.id)}">Start over</button>`:`<button class="pri" data-act="play" data-id="${esc(a.id)}">Play</button>`}${isEditor?`<button data-act="edit" data-id="${esc(a.id)}">Edit</button><button class="ghost" data-act="copy" data-id="${esc(a.id)}">Duplicate</button>`:""}</div>${a.published?"":`<span class="draft">Draft · only editors can see this</span>`}</div></article>`}).join("");
   const status=loadState==="loading"?`<p class="small">Loading adventures…</p>`:loadState==="error"?`<div class="warn">${esc(loadErr)} <button data-act="reload" style="margin-left:8px">Try again</button></div>`:!ADVS.length?`<p class="small">No adventures are published yet.</p>`:"";
   const codex=allAdv().map(a=>{const f=(P.facts[a.id]||[]).filter(id=>a.scenes[id]&&a.scenes[id].fact);if(!f.length)return"";return `<details><summary>${esc(a.title)} · ${f.length}</summary><ul>${f.map(id=>`<li>${esc(a.scenes[id].fact)}</li>`).join("")}</ul></details>`}).join("");
   app.innerHTML=`<div class="wrap"><div class="lib"><div><div class="hero"><h1>Type your way through history</h1><p>Read each scene, then type a choice to decide what happens. Careful readers find the best endings, because the right move depends on what really happened.</p></div>${status}<div class="cards">${cards}${isEditor?`<button class="card newcard" data-act="new"><h3>New adventure</h3><span class="small">Write a branching story in the editor</span></button>`:""}</div></div>
-  <aside class="side"><div class="box"><h3>${esc(cur)}</h3><div class="small">${totalH+totalM?`Overall accuracy ${Math.round(100*totalH/(totalH+totalM))}% across ${totalH+totalM} keys`:"No typing yet. Pick an adventure to start."}</div>
+  <aside class="side"><div class="box"><h3>${esc(cur)}</h3><div class="small">${totalH+totalM?`Overall accuracy ${Math.round(100*totalH/(totalH+totalM))}% across ${totalH+totalM} keys${SHOW_SPEED&&overallWpm()?`. Typing speed ${overallWpm()} wpm`:""}`:"No typing yet. Pick an adventure to start."}</div>
   <label for="diff">Difficulty</label><select id="diff">${Object.entries(DIFF).map(([k,v])=>`<option value="${k}" ${k===diffKey()?"selected":""}>${v.label}</option>`).join("")}</select><div class="small" id="diffNote" style="margin-top:4px">${esc(DIFF[diffKey()].note)}</div>${keys.length?`<div class="small" style="margin-top:12px">Keys to practise</div><div class="tk">${keys.map(([k,v])=>`<span>${k===" "?"space":esc(k)}<b>${Math.round(v*100)}%</b></span>`).join("")}</div>`:""}
   <p class="small" style="margin:14px 0 0">Profiles, saved progress and scores for all ${players.length} ${players.length===1?"player":"players"} live in this browser. Download a backup to keep them safe or move them to another computer.</p><div class="row" style="margin-top:10px"><button data-act="dataOut">Download data</button><button data-act="dataIn">Import data</button></div></div>
   <div class="box"><h3>Field notes</h3><div class="small">Facts you have uncovered while playing.</div>${codex||`<p class="small">None yet.</p>`}</div>
@@ -239,7 +243,7 @@ function play(adv,sceneId,testing,resume){view="play";setAccent(adv.accent);G={a
   go(sceneId||adv.start)}
 function sc(){return G.adv.scenes[G.scene]}
 function go(id,resumed){
-  G.scene=id;G.buf="";G.t0=0;G.token++;G.locked=false;
+  G.scene=id;G.buf="";G.t0=0;G.token++;G.locked=false;G.h0=G.hits;
   const s=sc(),aid=G.adv.id;
   if(s&&s.fact&&!resumed)G.notes++;
   if(s&&!G.testing){const P=ps();
@@ -247,7 +251,7 @@ function go(id,resumed){
     if(s.ending){P.endings[aid]=P.endings[aid]||[];if(!P.endings[aid].includes(id))P.endings[aid].push(id);
       if(!resumed){P.scores[aid]=P.scores[aid]||[];P.scores[aid].push({t:Date.now(),ending:s.ending,scene:id,acc:acc(),wpm:wpm(),diff:diffKey()});if(P.scores[aid].length>50)P.scores[aid].shift()}
       delete P.saves[aid]}
-    else P.saves[aid]={scene:id,flags:[...G.flags],hits:G.hits,misses:G.misses,ms:Math.round(G.ms),notes:G.notes,t:Date.now()};
+    else P.saves[aid]={scene:id,flags:[...G.flags],hits:G.hits,misses:G.misses,ms:Math.round(G.ms),wpm:wpm(),acc:acc(),notes:G.notes,t:Date.now()};
     saveStats()}
   renderPlay();
   if(timerSecs(s)){const tok=G.token,dur=timerSecs(s)*1000,end=performance.now()+dur;
@@ -269,10 +273,10 @@ function renderPlay(){
   if(!s){body=`<div class="story"><p>This choice leads to a scene called “${esc(G.scene)}”, which does not exist yet.</p></div>`}
   else if(s.ending){const fd=(ps().endings[a.id]||[]).length,tot=endingIds(a).length;
     body=`<span class="badge b-${esc(s.ending)}">${{good:"Best ending",mixed:"Hard-won ending",bad:"Story over"}[s.ending]||"The end"}</span> <span class="small">on ${esc(DIFF[diffKey()].label)}</span><div class="story">${para(s.text)}${s.fact?`<div class="note"><strong>Field note</strong>${esc(s.fact)}</div>`:""}</div>
-    <div class="stats"><div><b>${acc()}%</b><span>accuracy</span></div><div><b>${wpm()}</b><span>words per minute</span></div><div><b>${G.notes}</b><span>field notes this run</span></div><div><b>${G.testing?"–":fd+"/"+tot}</b><span>endings found</span></div></div>`}
+    <div class="stats"><div><b>${acc()}%</b><span>accuracy</span></div>${SHOW_SPEED?`<div><b>${wpm()}</b><span>words per minute</span></div>`:""}<div><b>${G.notes}</b><span>field notes this run</span></div><div><b>${G.testing?"–":fd+"/"+tot}</b><span>endings found</span></div></div>`}
   else body=`<div class="story">${para(s.text)}${s.fact?`<div class="note"><strong>Field note</strong>${esc(s.fact)}</div>`:""}</div>`;
   app.innerHTML=`<section class="play"><div class="scene-art">${art(a.art,a.accent)}</div>
-  <div class="ptop"><h2>${esc(a.title)}</h2><div class="meter"><span>Accuracy <b id="mAcc">${acc()}%</b></span><span>Speed <b id="mW">${wpm()}</b> wpm</span><span>${esc(DIFF[diffKey()].label)}</span></div><button class="ghost" data-act="${G.testing?"backEdit":"library"}">${G.testing?"Back to editor":"Save and leave"}</button></div>
+  <div class="ptop"><h2>${esc(a.title)}</h2><div class="meter"><span>Accuracy <b id="mAcc">${acc()}%</b></span>${SHOW_SPEED?`<span>Speed <b id="mW">${wpm()}</b> wpm</span>`:""}<span>${esc(DIFF[diffKey()].label)}</span></div><button class="ghost" data-act="${G.testing?"backEdit":"library"}">${G.testing?"Back to editor":"Save and leave"}</button></div>
   ${timerSecs(s)?`<div class="timer"><i id="tbar"></i></div>`:s&&!s.ending&&+s.timer>0&&s.timeout?`<p class="small">No timers: take your time.</p>`:""}
   ${body}<div class="prompt">${s&&s.ending?"Type to continue":"Type a choice"}</div><div class="choices" id="choices"></div>
   <div class="kb" id="kb"></div><div class="legend"><span><i style="background:var(--f1)"></i>little finger</span><span><i style="background:var(--f2)"></i>ring</span><span><i style="background:var(--f3)"></i>middle</span><span><i style="background:var(--f4)"></i>pointer</span></div>
@@ -292,7 +296,9 @@ function draw(){
 }
 function mark(k,ok){const P=ps().keys;P[k]=P[k]||[0,0];P[k][ok?0:1]++}
 function commit(c){
-  G.locked=true;if(G.t0){G.ms+=performance.now()-G.t0;G.t0=0}
+  G.locked=true;
+  if(G.t0){const dt=performance.now()-G.t0;G.ms+=dt;G.t0=0;
+    if(!G.testing&&dt<120000){const t=typing();t.chars+=G.hits-G.h0;t.ms+=Math.round(dt)}}
   list(c.gives).forEach(f=>G.flags.add(f));saveStats();
   const el=[...document.querySelectorAll(".ch")].find(e=>e.textContent.trim()===c.text.trim());if(el)el.classList.add("done");
   G.token++;
@@ -430,6 +436,7 @@ function importAdv(txt){
 function backup(){return{app:"keystone",kind:"player-data",version:1,exported:new Date().toISOString(),players,current:cur,sound,stats}}
 function mergeStats(a,b){/* combine two copies of one player's data, keeping the most complete of each part */
   const o={keys:{},facts:{},endings:{},scores:{},saves:{},difficulty:a.difficulty||b.difficulty};
+  const ta=a.typing||{chars:0,ms:0},tb=b.typing||{chars:0,ms:0};o.typing=(ta.chars||0)>=(tb.chars||0)?ta:tb;
   const ka=a.keys||{},kb=b.keys||{};new Set([...Object.keys(ka),...Object.keys(kb)]).forEach(k=>{const x=ka[k]||[0,0],y=kb[k]||[0,0];o.keys[k]=x[0]+x[1]>=y[0]+y[1]?x:y});
   ["facts","endings"].forEach(f=>{const A=a[f]||{},B=b[f]||{};new Set([...Object.keys(A),...Object.keys(B)]).forEach(id=>o[f][id]=[...new Set([...(A[id]||[]),...(B[id]||[])])])});
   const SA=a.scores||{},SB=b.scores||{};new Set([...Object.keys(SA),...Object.keys(SB)]).forEach(id=>{const m=new Map;[...(SA[id]||[]),...(SB[id]||[])].forEach(r=>m.set(r.t+"|"+r.scene,r));o.scores[id]=[...m.values()].sort((x,y)=>x.t-y.t).slice(-50)});

@@ -8,3 +8,8 @@ const EDIT_PASSWORD = 'change-me';
 
 // How many earlier versions of each adventure to keep in adventures/_backups/
 const BACKUPS_PER_ADVENTURE = 20;
+
+// Show typing speed (words per minute) to players: true or false.
+// Speed is always recorded in each player's data either way; this only hides it
+// on the play screen, endings, adventure cards and player panel.
+const SHOW_TYPING_SPEED = true;

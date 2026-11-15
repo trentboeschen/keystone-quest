@@ -101,7 +101,8 @@ if ($action === 'list' && $method === 'GET') {
         if ($a && ($a->published || $editor)) $list[] = $a;
     }
     usort($list, fn($x, $y) => strcasecmp($x->title, $y->title));
-    out(200, ['adventures' => $list, 'editor' => $editor, 'editing' => EDIT_PASSWORD !== '']);
+    $settings = ['showSpeed' => defined('SHOW_TYPING_SPEED') ? (bool)SHOW_TYPING_SPEED : true];
+    out(200, ['adventures' => $list, 'editor' => $editor, 'editing' => EDIT_PASSWORD !== '', 'settings' => $settings]);
 }
 
 if ($action === 'auth' && $method === 'GET') {

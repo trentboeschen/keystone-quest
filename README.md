@@ -11,6 +11,7 @@ A typing game for kids: branching history adventures where you type your choices
 | `config.php-sample` | Template for your settings. Copy it to `config.php`. |
 | `config.php` | Your editor password and backup setting. You create it; git ignores it, so your password never gets committed. |
 | `adventures/` | One `.json` file per adventure. The game loads every valid file in here; there is no manifest. |
+| `.claude/skills/write-adventure/` | A Claude Code skill for researching and writing new adventures, with a validator. |
 | `adventures/.htaccess` | Stops people downloading the files directly, so drafts stay hidden (Apache only). |
 
 ## Setup
@@ -59,6 +60,7 @@ Each file in `adventures/` is one adventure. The file name is its id (`pompeii.j
   "published": true,
   "updated": 1794774099061,
   "start": "start",
+  "sources": [{ "title": "Where a fact came from", "url": "https://..." }],
   "scenes": {
     "start": {
       "text": "The story for this scene.",
@@ -80,6 +82,8 @@ Each file in `adventures/` is one adventure. The file name is its id (`pompeii.j
 
 **`updated`:** set by the server on every save. Leave it alone.
 
+**`sources`:** optional list of references for the facts in the adventure. The game doesn't show them; they're for whoever reviews the adventure.
+
 **Scenes:**
 - `ending` is `good`, `mixed` or `bad`, or left out for a normal scene.
 - `timer` (seconds) and `timeout` (scene to jump to) are optional.
@@ -89,6 +93,31 @@ Each file in `adventures/` is one adventure. The file name is its id (`pompeii.j
 
 - **In the game:** sign in as editor, then use **New adventure**, **Duplicate** or **Import**. Saving writes straight to `adventures/`.
 - **By hand:** drop a `.json` file into `adventures/`. It appears on the next page load. Turn on `published` when it's ready.
+
+## Writing adventures with Claude
+
+The repo includes a Claude Code skill, `write-adventure`. Open the repo in Claude Code and ask for an adventure, for example "write an adventure about the Apollo 13 rescue". Claude will:
+
+1. research the history with web search and record its sources
+2. design a story graph with several endings, a timed scene or two, and items that carry choices forward
+3. write `adventures/<id>.json` as an unpublished draft
+4. run the validator and fix anything it finds
+
+Review the draft in the game's editor, then tick **Published**.
+
+You can run the validator yourself on any adventure, including ones written by hand:
+
+```
+python3 .claude/skills/write-adventure/scripts/validate_adventure.py adventures/*.json
+```
+
+It plays every path through the story to make sure:
+
+- no player can get stuck
+- every ending can be reached
+- no choice is the start of another one
+- choices only use keys on the game's keyboard
+- timers leave enough time for a beginner to read and type
 
 ## Safety nets
 

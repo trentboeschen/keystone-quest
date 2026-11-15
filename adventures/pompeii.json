@@ -85,7 +85,7 @@
     "wait": {
       "text": "Hours pass. The pumice does not stop. It drifts against the door, and above you the roof beams begin to creak.",
       "fact": "Pumice piled up nearly three metres deep in Pompeii. Its weight made many roofs collapse on the people sheltering below.",
-      "timer": 20,
+      "timer": 28,
       "timeout": "collapse",
       "choices": [
         {
@@ -141,7 +141,7 @@
     "coins": {
       "text": "Your family's savings are buried under the kitchen floor. You dig with your hands in the dark while the house groans around you. Your mother is shouting your name from the street.",
       "fact": "Many victims were found carrying coins, jewellery and keys: things they hoped to need when it was over.",
-      "timer": 15,
+      "timer": 28,
       "timeout": "trapped",
       "choices": [
         {
@@ -189,7 +189,7 @@
     "dawn": {
       "text": "Grey morning. You look back. A glowing wall of ash is pouring down the side of Vesuvius, faster than any horse, rolling across the land toward Pompeii.",
       "fact": "Early on the second morning, pyroclastic surges, avalanches of scorching gas and ash, swept into Pompeii. No one still in the town survived them.",
-      "timer": 12,
+      "timer": 28,
       "timeout": "survivedHard",
       "choices": [
         {

@@ -84,7 +84,7 @@
     },
     "tunnel": {
       "text": "You burrow along the top of the fill. Chips start to slide. The loose rock above your head shifts and groans.",
-      "timer": 10,
+      "timer": 26,
       "timeout": "tunnelFall",
       "choices": [
         {

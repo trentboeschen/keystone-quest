@@ -8,18 +8,31 @@ A typing game for kids: branching history adventures where you type your choices
 |---|---|
 | `index.html` | The game and the adventure editor. |
 | `api.php` | Reads and writes the adventure files. |
-| `config.php` | Your editor password and backup setting. |
+| `config.php-sample` | Template for your settings. Copy it to `config.php`. |
+| `config.php` | Your editor password and backup setting. You create it; git ignores it, so your password never gets committed. |
 | `adventures/` | One `.json` file per adventure. The game loads every valid file in here; there is no manifest. |
 | `adventures/.htaccess` | Stops people downloading the files directly, so drafts stay hidden (Apache only). |
 
 ## Setup
 
-1. Open `config.php` and change `EDIT_PASSWORD` from `change-me` to your own password.
-2. Upload the whole folder to your server, for example to `/typing/`.
+1. Upload the whole folder to your server, for example to `/typing/`, or clone the repository there.
+2. Copy `config.php-sample` to `config.php`, next to `api.php`, and change `EDIT_PASSWORD` from `change-me` to your own password:
+
+   ```
+   cp config.php-sample config.php
+   ```
 3. Make sure PHP can write to the `adventures/` folder. On most hosts that means permissions `775` (or `777` on some shared hosts) on `adventures/`.
 4. Open the folder's URL in a browser. Click **Editor** and enter your password to create and edit adventures.
 
+Until `config.php` exists, the game shows a setup message instead of the adventures.
+
 Needs PHP 7.4 or newer. No database.
+
+### Updating from git
+
+Run `git pull` on the server. Your `config.php` and the `adventures/_backups/` folder are ignored by git, so pulling never overwrites them.
+
+Adventures you create or edit on the server change files in `adventures/`. To keep them in the repository, commit them from the server, or download them with **Export** and commit them from your own computer. If you edit the same adventure in both places, `git pull` reports a conflict instead of silently replacing either version.
 
 ### If your server uses nginx instead of Apache
 
@@ -79,7 +92,7 @@ Each file in `adventures/` is one adventure. The file name is its id (`pompeii.j
 
 ## Safety nets
 
-- Every save and delete first copies the old version to `adventures/_backups/`. The last 20 per adventure are kept; you can change that in `config.php`. To restore one, copy it back into `adventures/` with the original file name.
+- Every save and delete first copies the old version to `adventures/_backups/`. The last 20 per adventure are kept; you can change that with `BACKUPS_PER_ADVENTURE` in `config.php`. To restore one, copy it back into `adventures/` with the original file name.
 - If someone saves an adventure after you opened it (another tab, another person, or a hand edit on the server), the editor warns you. You can then choose to overwrite their version or load it.
 
 ## Player data

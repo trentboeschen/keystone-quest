@@ -7,6 +7,12 @@
 // Each adventure file holds its listing info (title, era, blurb, art, accent),
 // a "published" true/false, an "updated" timestamp, the start scene and the scenes.
 
+if (!is_file(__DIR__ . '/config.php')) {
+    http_response_code(500);
+    header('Content-Type: application/json; charset=utf-8');
+    echo json_encode(['error' => 'Setup needed: copy config.php-sample to config.php and set your editor password.']);
+    exit;
+}
 require __DIR__ . '/config.php';
 
 header('Content-Type: application/json; charset=utf-8');

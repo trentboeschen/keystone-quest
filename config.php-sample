@@ -1,5 +1,7 @@
 <?php
 // Keystone Quest settings.
+// Copy this file to config.php and edit the copy. config.php is ignored by git,
+// so your password never ends up in the repository.
 // Change this before uploading. Anyone with this password can create, edit and delete adventures.
 // Leave it empty ('') to switch editing off completely.
 const EDIT_PASSWORD = 'change-me';

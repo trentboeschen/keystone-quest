@@ -2,3 +2,4 @@ adventures/_backups/
 adventures/.lock
 adventures/*.tmp
 .DS_Store
+config.php

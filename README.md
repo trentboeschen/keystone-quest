@@ -148,6 +148,26 @@ Each player picks a difficulty in their player panel. It scales every timed scen
 
 Write adventure timers for Normal. The validator checks them against a beginner's typing speed. Each finished run records the difficulty it was played on.
 
+## Badges
+
+Players earn 24 badges in seven groups:
+
+| Group | Badges |
+|---|---|
+| Story | First Steps, Survivor, The Hard Way, Completionist (every ending in one adventure), Grand Tour (a best ending in every adventure) |
+| Field notes | 10, 25 and 50 notes collected |
+| Accuracy | Steady Hands (95%+ run), Flawless (no mistakes), Home Row Hero |
+| Practice | Keyboard Explorer (every letter), 1,000 / 5,000 / 20,000 correct keys |
+| Speed | 15, 25 and 40 words per minute in a finished run |
+| Against the clock | Beat the Clock, Cool Under Pressure (10 timed scenes), Daredevil (best ending on Challenging or Expert) |
+| Keep it up | Played on 3, 10 and 30 different days |
+
+Badges are worked out from each player's saved data, so earlier play counts. New badges pop up while playing and are listed on the ending screen. The player panel shows recent badges and opens the full gallery, where locked badges show what's needed.
+
+When `SHOW_TYPING_SPEED` is `false`, speed badges are hidden but still earned, so they appear if you switch speed back on. "Beat the Clock" badges only count when timers are on. Grand Tour and Completionist count published adventures only, so a new adventure gives players something new to earn.
+
+To add or change badges, edit the `BADGES` list in `index.html`. Each badge has an id, a group, a name, a description and a rule.
+
 ## Player data
 
 The game records each player's typing speed in three places:
@@ -158,4 +178,4 @@ The game records each player's typing speed in three places:
 Speed counts only correct keystrokes during active typing, so time spent reading a scene doesn't drag it down.
 
 
-Player profiles, difficulty, saved progress, scores, key stats and typing speed stay in each player's browser (localStorage), not on the server. Use **Download data** and **Import data** in the player panel to back them up or move them to another computer.
+Player profiles, difficulty, saved progress, scores, key stats, typing speed and badges stay in each player's browser (localStorage), not on the server. Use **Download data** and **Import data** in the player panel to back them up or move them to another computer.

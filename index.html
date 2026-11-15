@@ -47,6 +47,14 @@ label{display:block;font-size:14px;color:var(--mute);margin:12px 0 4px}
 label.pub{display:flex;gap:10px;align-items:center;color:var(--ink);font-weight:700;font-size:16px;margin:4px 0 6px;min-height:44px;cursor:pointer}
 label.pub input{width:22px;height:22px;accent-color:var(--acc)}
 input[readonly]{opacity:.7}
+.medals{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px}
+.medal{display:flex;gap:12px;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.medal svg{flex:none}.medal strong{display:block;font-size:15px}.medal span{display:block;font-size:13px;color:var(--mute);line-height:1.35}.medal em{display:block;font-size:12px;color:var(--mute);font-style:normal;margin-top:2px}
+.medal.locked strong{color:var(--mute)}
+.mini{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+#toast{position:fixed;left:50%;bottom:20px;transform:translate(-50%,140%);display:flex;gap:12px;align-items:center;background:var(--ink);color:var(--bg);border-radius:14px;padding:12px 18px 12px 12px;max-width:min(440px,calc(100vw - 24px));box-shadow:0 10px 30px rgb(0 0 0/.3);transition:transform .35s;z-index:20;pointer-events:none}
+#toast.show{transform:translate(-50%,0)}#toast strong{display:block}#toast span{display:block;font-size:14px;opacity:.8}
+@media(prefers-reduced-motion:reduce){#toast{transition:none}}
 .newcard{border-style:dashed;align-items:center;justify-content:center;min-height:260px;text-align:center;padding:20px;gap:10px}
 .art svg{display:block;width:100%;height:100%}
 .side{display:flex;flex-direction:column;gap:18px}
@@ -114,7 +122,7 @@ details li{font-size:14px;margin:6px 0;color:var(--mute)}
 .issues li{font-size:14px;margin:6px 0;cursor:pointer}
 .saved{font-size:14px;color:var(--mute)}
 .modal{position:fixed;inset:0;background:rgb(0 0 0/.45);display:grid;place-items:center;padding:16px;z-index:9}
-.modal .box{width:min(640px,100%);max-height:90vh;overflow:auto}
+.modal .box{width:min(760px,100%);max-height:90vh;overflow:auto}
 .modal textarea{min-height:240px;font-family:"Atkinson Hyperlegible Mono",monospace;font-size:13px}
 @media(max-width:900px){.lib,.ed{grid-template-columns:minmax(0,1fr)}}
 @media(max-width:600px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.grid3,.chrow,.chrow .adv{grid-template-columns:minmax(0,1fr)}.k{width:calc((100vw - 90px)/11)}}
@@ -131,6 +139,7 @@ details li{font-size:14px;margin:6px 0;color:var(--mute)}
 </header>
 <main id="app"></main>
 <div id="modal"></div>
+<div id="toast" role="status" aria-live="polite"></div>
 <script>
 {
 const ARTS={none:"Plain",volcano:"Volcano",desert:"Desert valley",castle:"Castle",sea:"Sea voyage"};
@@ -211,13 +220,91 @@ function renderPlayers(){$("#player").innerHTML=players.map(p=>`<option ${p===cu
 let ac=null;
 function beep(ok){if(!sound)return;try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();const o=ac.createOscillator(),g=ac.createGain();o.type=ok?"triangle":"sawtooth";o.frequency.value=ok?660:140;g.gain.setValueAtTime(ok?.05:.07,ac.currentTime);g.gain.exponentialRampToValueAtTime(.0001,ac.currentTime+(ok?.06:.18));o.connect(g).connect(ac.destination);o.start();o.stop(ac.currentTime+.2)}catch(e){}}
 
+/* ---------- badges ----------
+   Each badge is worked out from the player's saved data, so past play counts.
+   Earned badges are stored as P.badges[id] = time earned. Speed badges are hidden
+   (but still earned) when SHOW_TYPING_SPEED is false. */
+const CATS={story:{label:"Story",col:"#b8352a",g:'<path d="M20 7 L25 20 L20 33 L15 20Z"/><circle cx="20" cy="20" r="2.5" fill="#000" opacity=".35"/>'},
+ notes:{label:"Field notes",col:"#0f8486",g:'<rect x="11" y="9" width="18" height="22" rx="2"/><path d="M14 15h12M14 19h12M14 23h8" stroke="#000" stroke-opacity=".35" stroke-width="2"/>'},
+ accuracy:{label:"Accuracy",col:"#2d7a4c",g:'<circle cx="20" cy="20" r="12"/><circle cx="20" cy="20" r="7.5" fill="#000" opacity=".3"/><circle cx="20" cy="20" r="3.5"/>'},
+ keys:{label:"Practice",col:"#5a6fb0",g:'<rect x="9" y="11" width="22" height="18" rx="4"/><rect x="13" y="14" width="14" height="9" rx="2" fill="#000" opacity=".25"/>'},
+ speed:{label:"Speed",col:"#c47d12",g:'<path d="M23 6 L11 22 H19 L16 34 L29 17 H21Z"/>'},
+ time:{label:"Against the clock",col:"#8a4fb0",g:'<path d="M12 8 H28 L20 20 L28 32 H12 L20 20Z"/>'},
+ habit:{label:"Keep it up",col:"#a0522d",g:'<rect x="10" y="12" width="20" height="18" rx="3"/><rect x="10" y="12" width="20" height="6" rx="2" fill="#000" opacity=".3"/><path d="M15 9v6M25 9v6" stroke="#fff" stroke-width="3"/>'}};
+const BADGES=[
+ {id:"first-steps",cat:"story",name:"First Steps",desc:"Finish any adventure.",ok:x=>x.runs>=1},
+ {id:"survivor",cat:"story",name:"Survivor",desc:"Reach a best ending.",ok:x=>x.goodRuns>=1},
+ {id:"hard-way",cat:"story",name:"The Hard Way",desc:"Reach an ending where the story is over, and learn from it.",ok:x=>x.badRuns>=1},
+ {id:"completionist",cat:"story",name:"Completionist",desc:"Find every ending in one adventure.",ok:x=>x.fullAdv>=1},
+ {id:"grand-tour",cat:"story",name:"Grand Tour",desc:"Reach a best ending in every adventure.",ok:x=>x.advCount>0&&x.goodAdv>=x.advCount},
+ {id:"notes-10",cat:"notes",name:"Note Taker",desc:"Collect 10 field notes.",ok:x=>x.notes>=10},
+ {id:"notes-25",cat:"notes",name:"Scholar",desc:"Collect 25 field notes.",ok:x=>x.notes>=25},
+ {id:"notes-50",cat:"notes",name:"Walking Encyclopedia",desc:"Collect 50 field notes.",ok:x=>x.notes>=50},
+ {id:"steady",cat:"accuracy",name:"Steady Hands",desc:"Finish an adventure with 95% accuracy or better.",ok:x=>x.bestAcc>=95},
+ {id:"flawless",cat:"accuracy",name:"Flawless",desc:"Finish an adventure without a single mistake.",ok:x=>x.bestAcc>=100},
+ {id:"home-row",cat:"accuracy",name:"Home Row Hero",desc:"Reach 95% accuracy on every home row key, with at least 20 presses each.",ok:x=>x.homeRow},
+ {id:"explorer",cat:"keys",name:"Keyboard Explorer",desc:"Type every letter from a to z at least 10 times.",ok:x=>x.allLetters},
+ {id:"keys-1k",cat:"keys",name:"Apprentice Scribe",desc:"Type 1,000 correct keys.",ok:x=>x.keys>=1000},
+ {id:"keys-5k",cat:"keys",name:"Journeyman Scribe",desc:"Type 5,000 correct keys.",ok:x=>x.keys>=5000},
+ {id:"keys-20k",cat:"keys",name:"Master Scribe",desc:"Type 20,000 correct keys.",ok:x=>x.keys>=20000},
+ {id:"wpm-15",cat:"speed",speed:true,name:"Quick Fingers",desc:"Finish an adventure at 15 words per minute or faster.",ok:x=>x.bestWpm>=15},
+ {id:"wpm-25",cat:"speed",speed:true,name:"Swift",desc:"Finish an adventure at 25 words per minute or faster.",ok:x=>x.bestWpm>=25},
+ {id:"wpm-40",cat:"speed",speed:true,name:"Lightning",desc:"Finish an adventure at 40 words per minute or faster.",ok:x=>x.bestWpm>=40},
+ {id:"clock-1",cat:"time",name:"Beat the Clock",desc:"Get through a timed scene before time runs out.",ok:x=>x.beatClock>=1},
+ {id:"clock-10",cat:"time",name:"Cool Under Pressure",desc:"Beat the clock in 10 timed scenes.",ok:x=>x.beatClock>=10},
+ {id:"daredevil",cat:"time",name:"Daredevil",desc:"Reach a best ending on Challenging or Expert.",ok:x=>x.hardGood},
+ {id:"days-3",cat:"habit",name:"Regular",desc:"Play on 3 different days.",ok:x=>x.days>=3},
+ {id:"days-10",cat:"habit",name:"Devoted",desc:"Play on 10 different days.",ok:x=>x.days>=10},
+ {id:"days-30",cat:"habit",name:"Legend",desc:"Play on 30 different days.",ok:x=>x.days>=30}];
+const shownBadges=()=>BADGES.filter(b=>SHOW_SPEED||!b.speed);
+function counts(){const P=ps();if(!P.counts||typeof P.counts!=="object")P.counts={};if(!Array.isArray(P.days))P.days=[];if(!P.badges||typeof P.badges!=="object")P.badges={};return P}
+function badgeFacts(){
+  const P=counts(),runs=Object.values(P.scores).flat(),pub=ADVS.filter(a=>a.published);
+  const kv=k=>P.keys[k]||[0,0],rate=k=>{const v=kv(k);return v[0]+v[1]?v[0]/(v[0]+v[1]):0};
+  const goodIn=a=>(P.endings[a.id]||[]).some(id=>a.scenes[id]&&a.scenes[id].ending==="good");
+  return{runs:runs.length,goodRuns:runs.filter(r=>r.ending==="good").length,badRuns:runs.filter(r=>r.ending==="bad").length,
+    fullAdv:pub.filter(a=>{const e=endingIds(a);return e.length&&e.every(id=>(P.endings[a.id]||[]).includes(id))}).length,
+    goodAdv:pub.filter(goodIn).length,advCount:pub.length,
+    notes:Object.values(P.facts).reduce((s,l)=>s+l.length,0),
+    bestAcc:Math.max(0,...runs.map(r=>r.acc||0)),bestWpm:Math.max(0,...runs.map(r=>r.wpm||0)),
+    homeRow:"asdfjkl;".split("").every(k=>kv(k)[0]+kv(k)[1]>=20&&rate(k)>=.95),
+    allLetters:"abcdefghijklmnopqrstuvwxyz".split("").every(k=>kv(k)[0]>=10),
+    keys:Object.values(P.keys).reduce((s,v)=>s+v[0],0),
+    beatClock:P.counts.beatClock||0,hardGood:runs.some(r=>r.ending==="good"&&(r.diff==="challenge"||r.diff==="expert")),
+    days:P.days.length};
+}
+/* awards any newly earned badges; returns them */
+function checkBadges(){
+  if(loadState!=="ok")return[];
+  const P=counts(),x=badgeFacts(),got=[];
+  BADGES.forEach(b=>{if(!P.badges[b.id]&&b.ok(x)){P.badges[b.id]=Date.now();got.push(b)}});
+  if(got.length)saveStats();return got;
+}
+function medal(b,earned,size){const c=CATS[b.cat];return `<svg viewBox="0 0 48 48" width="${size||48}" height="${size||48}" aria-hidden="true"><circle cx="24" cy="24" r="23" fill="${earned?c.col:"var(--line)"}"/><circle cx="24" cy="24" r="19" fill="none" stroke="#fff" stroke-opacity="${earned?.55:.4}" stroke-width="1.5"/><g transform="translate(4 4)" fill="#fff" opacity="${earned?1:.55}">${c.g}</g></svg>`}
+let toastQ=[],toastOn=false;
+/* badges earned at the same moment share one toast */
+function toast(bs){bs=bs.filter(b=>SHOW_SPEED||!b.speed);if(!bs.length)return;toastQ.push(bs);if(!toastOn)nextToast()}
+function nextToast(){const bs=toastQ.shift(),t=$("#toast");if(!bs){toastOn=false;t.className="";return}toastOn=true;
+  t.innerHTML=bs.length===1?`${medal(bs[0],true,44)}<div><strong>Badge earned: ${esc(bs[0].name)}</strong><span>${esc(bs[0].desc)}</span></div>`
+    :`${medal(bs[0],true,44)}<div><strong>${bs.length} badges earned</strong><span>${esc(bs.map(b=>b.name).join(", "))}</span></div>`;t.className="show";
+  setTimeout(()=>{t.className="";setTimeout(nextToast,350)},3200)}
+function badgeGallery(){
+  const P=counts(),list=shownBadges(),n=list.filter(b=>P.badges[b.id]).length;
+  const groups=Object.keys(CATS).map(cat=>{const bs=list.filter(b=>b.cat===cat);if(!bs.length)return"";
+    return `<h3 style="margin:18px 0 8px;font-size:17px">${esc(CATS[cat].label)}</h3><div class="medals">${bs.map(b=>{const t=P.badges[b.id];
+      return `<div class="medal ${t?"":"locked"}">${medal(b,!!t)}<div><strong>${esc(b.name)}</strong><span>${esc(b.desc)}</span>${t?`<em>Earned ${new Date(t).toLocaleDateString()}</em>`:""}</div></div>`}).join("")}</div>`}).join("");
+  modal(`<div class="row"><h3 style="margin-right:auto">${esc(cur)}'s badges</h3><span class="small">${n} of ${list.length} earned</span></div>${groups}<div class="row" style="margin-top:16px"><button class="pri" data-act="close">Close</button></div>`);
+}
+
 /* ---------- library ---------- */
 let view="library";
 function setAccent(c){document.documentElement.style.setProperty("--acc",c||"#b8352a")}
 function endingIds(a){return Object.keys(a.scenes).filter(k=>a.scenes[k].ending)}
 function renderLibrary(){
   view="library";setAccent("#b8352a");
-  const P=ps();
+  checkBadges();
+  const P=counts();
+  const earned=shownBadges().filter(b=>P.badges[b.id]).sort((a,b)=>P.badges[b.id]-P.badges[a.id]);
   const keys=Object.entries(P.keys).filter(([k,v])=>v[0]+v[1]>=6).map(([k,v])=>[k,v[0]/(v[0]+v[1])]).sort((a,b)=>a[1]-b[1]).slice(0,6).filter(x=>x[1]<.97);
   const totalH=Object.values(P.keys).reduce((s,v)=>s+v[0],0),totalM=Object.values(P.keys).reduce((s,v)=>s+v[1],0);
   const cards=allAdv().map(a=>{const found=(P.endings[a.id]||[]).length,tot=endingIds(a).length,sv=P.saves[a.id],runs=P.scores[a.id]||[];
@@ -230,6 +317,7 @@ function renderLibrary(){
   <aside class="side"><div class="box"><h3>${esc(cur)}</h3><div class="small">${totalH+totalM?`Overall accuracy ${Math.round(100*totalH/(totalH+totalM))}% across ${totalH+totalM} keys${SHOW_SPEED&&overallWpm()?`. Typing speed ${overallWpm()} wpm`:""}`:"No typing yet. Pick an adventure to start."}</div>
   <label for="diff">Difficulty</label><select id="diff">${Object.entries(DIFF).map(([k,v])=>`<option value="${k}" ${k===diffKey()?"selected":""}>${v.label}</option>`).join("")}</select><div class="small" id="diffNote" style="margin-top:4px">${esc(DIFF[diffKey()].note)}</div>${keys.length?`<div class="small" style="margin-top:12px">Keys to practise</div><div class="tk">${keys.map(([k,v])=>`<span>${k===" "?"space":esc(k)}<b>${Math.round(v*100)}%</b></span>`).join("")}</div>`:""}
   <p class="small" style="margin:14px 0 0">Profiles, saved progress and scores for all ${players.length} ${players.length===1?"player":"players"} live in this browser. Download a backup to keep them safe or move them to another computer.</p><div class="row" style="margin-top:10px"><button data-act="dataOut">Download data</button><button data-act="dataIn">Import data</button></div></div>
+  <div class="box"><h3>Badges</h3><div class="small">${earned.length} of ${shownBadges().length} earned</div>${earned.length?`<div class="mini">${earned.slice(0,8).map(b=>`<span title="${esc(b.name)}">${medal(b,true,40)}</span>`).join("")}</div>`:`<p class="small">Finish an adventure to earn your first one.</p>`}<button data-act="badges" style="margin-top:10px">See all badges</button></div>
   <div class="box"><h3>Field notes</h3><div class="small">Facts you have uncovered while playing.</div>${codex||`<p class="small">None yet.</p>`}</div>
   ${isEditor?`<div class="box"><h3>Editor mode</h3><div class="small">${ADVS.filter(a=>a.published).length} published, ${ADVS.filter(a=>!a.published).length} ${ADVS.filter(a=>!a.published).length===1?"draft":"drafts"}. Players only see published adventures.</div><div class="row" style="margin-top:10px"><button data-act="new">New adventure</button><button data-act="import">Import</button></div></div>`:""}</aside></div></div>`;
 }
@@ -246,13 +334,15 @@ function go(id,resumed){
   G.scene=id;G.buf="";G.t0=0;G.token++;G.locked=false;G.h0=G.hits;
   const s=sc(),aid=G.adv.id;
   if(s&&s.fact&&!resumed)G.notes++;
-  if(s&&!G.testing){const P=ps();
+  if(s&&!G.testing){const P=counts();
+    const day=new Date().toLocaleDateString("en-CA");if(!P.days.includes(day)){P.days.push(day);if(P.days.length>400)P.days.shift()}
     if(s.fact){P.facts[aid]=P.facts[aid]||[];if(!P.facts[aid].includes(id))P.facts[aid].push(id)}
     if(s.ending){P.endings[aid]=P.endings[aid]||[];if(!P.endings[aid].includes(id))P.endings[aid].push(id);
       if(!resumed){P.scores[aid]=P.scores[aid]||[];P.scores[aid].push({t:Date.now(),ending:s.ending,scene:id,acc:acc(),wpm:wpm(),diff:diffKey()});if(P.scores[aid].length>50)P.scores[aid].shift()}
       delete P.saves[aid]}
     else P.saves[aid]={scene:id,flags:[...G.flags],hits:G.hits,misses:G.misses,ms:Math.round(G.ms),wpm:wpm(),acc:acc(),notes:G.notes,t:Date.now()};
-    saveStats()}
+    saveStats();
+    const got=checkBadges();G.newBadges=(G.newBadges||[]).concat(got);toast(got)}
   renderPlay();
   if(timerSecs(s)){const tok=G.token,dur=timerSecs(s)*1000,end=performance.now()+dur;
     const loop=()=>{if(tok!==G.token||view!=="play")return;const left=end-performance.now();const bar=$("#tbar");if(bar)bar.style.width=Math.max(0,left/dur*100)+"%";
@@ -273,7 +363,8 @@ function renderPlay(){
   if(!s){body=`<div class="story"><p>This choice leads to a scene called “${esc(G.scene)}”, which does not exist yet.</p></div>`}
   else if(s.ending){const fd=(ps().endings[a.id]||[]).length,tot=endingIds(a).length;
     body=`<span class="badge b-${esc(s.ending)}">${{good:"Best ending",mixed:"Hard-won ending",bad:"Story over"}[s.ending]||"The end"}</span> <span class="small">on ${esc(DIFF[diffKey()].label)}</span><div class="story">${para(s.text)}${s.fact?`<div class="note"><strong>Field note</strong>${esc(s.fact)}</div>`:""}</div>
-    <div class="stats"><div><b>${acc()}%</b><span>accuracy</span></div>${SHOW_SPEED?`<div><b>${wpm()}</b><span>words per minute</span></div>`:""}<div><b>${G.notes}</b><span>field notes this run</span></div><div><b>${G.testing?"–":fd+"/"+tot}</b><span>endings found</span></div></div>`}
+    <div class="stats"><div><b>${acc()}%</b><span>accuracy</span></div>${SHOW_SPEED?`<div><b>${wpm()}</b><span>words per minute</span></div>`:""}<div><b>${G.notes}</b><span>field notes this run</span></div><div><b>${G.testing?"–":fd+"/"+tot}</b><span>endings found</span></div></div>
+    ${(G.newBadges||[]).filter(b=>SHOW_SPEED||!b.speed).length?`<div class="prompt">Badges earned this run</div><div class="medals">${G.newBadges.filter(b=>SHOW_SPEED||!b.speed).map(b=>`<div class="medal">${medal(b,true)}<div><strong>${esc(b.name)}</strong><span>${esc(b.desc)}</span></div></div>`).join("")}</div>`:""}`}
   else body=`<div class="story">${para(s.text)}${s.fact?`<div class="note"><strong>Field note</strong>${esc(s.fact)}</div>`:""}</div>`;
   app.innerHTML=`<section class="play"><div class="scene-art">${art(a.art,a.accent)}</div>
   <div class="ptop"><h2>${esc(a.title)}</h2><div class="meter"><span>Accuracy <b id="mAcc">${acc()}%</b></span>${SHOW_SPEED?`<span>Speed <b id="mW">${wpm()}</b> wpm</span>`:""}<span>${esc(DIFF[diffKey()].label)}</span></div><button class="ghost" data-act="${G.testing?"backEdit":"library"}">${G.testing?"Back to editor":"Save and leave"}</button></div>
@@ -299,6 +390,7 @@ function commit(c){
   G.locked=true;
   if(G.t0){const dt=performance.now()-G.t0;G.ms+=dt;G.t0=0;
     if(!G.testing&&dt<120000){const t=typing();t.chars+=G.hits-G.h0;t.ms+=Math.round(dt)}}
+  if(!G.testing&&!c.sys&&timerSecs(sc())){const P=counts();P.counts.beatClock=(P.counts.beatClock||0)+1}
   list(c.gives).forEach(f=>G.flags.add(f));saveStats();
   const el=[...document.querySelectorAll(".ch")].find(e=>e.textContent.trim()===c.text.trim());if(el)el.classList.add("done");
   G.token++;
@@ -436,6 +528,9 @@ function importAdv(txt){
 function backup(){return{app:"keystone",kind:"player-data",version:1,exported:new Date().toISOString(),players,current:cur,sound,stats}}
 function mergeStats(a,b){/* combine two copies of one player's data, keeping the most complete of each part */
   const o={keys:{},facts:{},endings:{},scores:{},saves:{},difficulty:a.difficulty||b.difficulty};
+  const ba=a.badges||{},bb=b.badges||{};o.badges={};new Set([...Object.keys(ba),...Object.keys(bb)]).forEach(k=>o.badges[k]=Math.min(ba[k]||Infinity,bb[k]||Infinity));
+  const ca=a.counts||{},cb=b.counts||{};o.counts={};new Set([...Object.keys(ca),...Object.keys(cb)]).forEach(k=>o.counts[k]=Math.max(ca[k]||0,cb[k]||0));
+  o.days=[...new Set([...(a.days||[]),...(b.days||[])])].sort().slice(-400);
   const ta=a.typing||{chars:0,ms:0},tb=b.typing||{chars:0,ms:0};o.typing=(ta.chars||0)>=(tb.chars||0)?ta:tb;
   const ka=a.keys||{},kb=b.keys||{};new Set([...Object.keys(ka),...Object.keys(kb)]).forEach(k=>{const x=ka[k]||[0,0],y=kb[k]||[0,0];o.keys[k]=x[0]+x[1]>=y[0]+y[1]?x:y});
   ["facts","endings"].forEach(f=>{const A=a[f]||{},B=b[f]||{};new Set([...Object.keys(A),...Object.keys(B)]).forEach(id=>o[f][id]=[...new Set([...(A[id]||[]),...(B[id]||[])])])});
@@ -474,6 +569,7 @@ document.addEventListener("click",async e=>{
       closeModal();renderPlayers();return renderLibrary()}
     case "copy":{const a=clone(findAdv(id));a.title+=" (copy)";a.id=freeId(a.title);a.published=false;delete a.updated;return openEditor(a,true)}
     case "edit":return openEditor(findAdv(id));
+    case "badges":return badgeGallery();
     case "reload":loadState="loading";renderLibrary();await loadAdventures();return renderLibrary();
     case "signIn":return signIn(()=>{if(view==="library")renderLibrary()});
     case "signInGo":{const k=$("#ek").value;if(!k)return;editKey=k;try{await api("auth");ls.set("ksq-key",k);closeModal();await loadAdventures();const f=window._afterSignIn;window._afterSignIn=null;if(view==="library")renderLibrary();if(f)f()}catch(x){editKey="";$("#ekMsg").textContent=x.status===401?"That password isn't right.":x.message}return}

@@ -21,7 +21,7 @@ ID_RE = re.compile(r"^[a-z0-9][a-z0-9-]{0,63}$")
 SCENE_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_-]{0,63}$")
 HEX_RE = re.compile(r"^#[0-9a-fA-F]{6}$")
 TYPABLE = set("abcdefghijklmnopqrstuvwxyz ,.;'/")  # the keys drawn on the game's keyboard
-ARTS = {"none", "volcano", "desert", "castle", "sea"}
+ARTS = {"none", "volcano", "desert", "castle", "sea", "civic"}
 ENDINGS = {"good", "mixed", "bad"}
 TOP_KEYS = ["id", "title", "era", "blurb", "art", "accent", "published", "updated", "start", "scenes"]
 

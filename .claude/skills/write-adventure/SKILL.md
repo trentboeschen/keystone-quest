@@ -100,7 +100,7 @@ Save to `adventures/<id>.json`. The id is lowercase letters, numbers and dashes 
 ```
 
 Field rules:
-- `art`: `volcano`, `desert`, `castle`, `sea` or `none`. Pick the closest; `none` paints a plain band in the accent colour.
+- `art`: `volcano`, `desert`, `castle`, `sea`, `civic` (a columned public building with a ramp through its steps) or `none`. Pick the closest; `none` paints a plain band in the accent colour.
 - `accent`: a `#rrggbb` colour that suits the subject and has enough contrast for white text.
 - `published`: always `false`. The parent reviews and publishes it in the game's editor.
 - Leave out `updated`; the server sets it.

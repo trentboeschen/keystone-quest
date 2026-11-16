@@ -170,7 +170,7 @@ body.softkb .kbtip{display:inline}
 <div id="toast" role="status" aria-live="polite"></div>
 <script>
 {
-const ARTS={none:"Plain",volcano:"Volcano",desert:"Desert valley",castle:"Castle",sea:"Sea voyage"};
+const ARTS={none:"Plain",volcano:"Volcano",desert:"Desert valley",castle:"Castle",sea:"Sea voyage",civic:"Public building"};
 
 /* ---------- helpers ---------- */
 const $=s=>document.querySelector(s);
@@ -195,6 +195,21 @@ function art(kind,acc){
   if(kind==="castle"){
     let cren="";for(let i=0;i<10;i++)cren+=`<rect x="${330+i*16}" y="96" width="9" height="12" fill="#3b3c43"/>`;
     return `<svg viewBox="0 0 800 240" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><defs><linearGradient id="gc" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#93aebf"/><stop offset="1" stop-color="#e3e6dc"/></linearGradient></defs><rect width="800" height="240" fill="url(#gc)"/><path d="M0 170 Q200 120 400 150 T800 140 L800 240 L0 240Z" fill="#6e8a57"/><rect x="330" y="108" width="150" height="80" fill="#3b3c43"/>${cren}<rect x="300" y="70" width="40" height="118" fill="#2f3036"/><rect x="470" y="70" width="40" height="118" fill="#2f3036"/><path d="M296 70 L320 40 L344 70Z M466 70 L490 40 L514 70Z" fill="${acc}"/><path d="M390 188 L390 150 Q405 134 420 150 L420 188Z" fill="#1d1d21"/><path d="M0 200 Q300 170 800 205 L800 240 L0 240Z" fill="#4c6a3c"/></svg>`}
+  if(kind==="civic"){
+    /* a columned federal building; a ramp cuts diagonally through the front steps, its handrail in the adventure's colour */
+    let steps="";for(let i=0;i<6;i++)steps+=`<rect x="${226+i*7}" y="${207-i*8}" width="${348-i*14}" height="8" fill="${i%2?"#d6cfc1":"#cbc3b3"}"/><rect x="${226+i*7}" y="${207-i*8}" width="${348-i*14}" height="1.5" fill="#f1ece2"/>`;
+    let cols="";for(let i=0;i<6;i++){const x=274+i*48;cols+=`<rect x="${x}" y="96" width="18" height="63" fill="#f2eee6"/><rect x="${x+12}" y="96" width="6" height="63" fill="#d9d2c4"/><rect x="${x-3}" y="92" width="24" height="5" fill="#e6e0d4"/><rect x="${x-3}" y="158" width="24" height="4" fill="#e6e0d4"/>`}
+    return `<svg viewBox="0 0 800 240" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><defs><linearGradient id="gk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#b3bed2"/><stop offset="1" stop-color="#e8ebf0"/></linearGradient></defs><rect width="800" height="240" fill="url(#gk)"/>
+    <rect x="150" y="108" width="500" height="60" fill="#ddd6c8"/><rect x="150" y="108" width="500" height="6" fill="#cfc7b7"/>
+    ${[170,200,600,630].map(x=>`<rect x="${x}" y="124" width="14" height="26" fill="#9aa6b8"/>`).join("")}
+    <rect x="248" y="159" width="304" height="9" fill="#d4cdbf"/>${cols}
+    <rect x="246" y="78" width="308" height="15" fill="#e9e4da"/><rect x="246" y="90" width="308" height="3" fill="#cfc7b7"/>
+    <path d="M240 79 L400 44 L560 79Z" fill="#efeae1"/><path d="M262 75 L400 51 L538 75Z" fill="#ddd6c8"/>
+    <rect y="215" width="800" height="25" fill="#bdb5a6"/><rect y="215" width="800" height="3" fill="#cfc8ba"/>${steps}
+    <path d="M236 215 L300 215 L408 167 L356 167Z" fill="#000" opacity=".12" transform="translate(5 2)"/>
+    <path d="M236 215 L300 215 L408 167 L356 167Z" fill="#d8c8a4"/><path d="M300 215 L408 167 L412 169 L305 217Z" fill="#9c8e70"/><path d="M236 215 L356 167" stroke="#efe4c9" stroke-width="2"/>
+    <path d="M244 200 L362 148" stroke="${acc}" stroke-width="4" stroke-linecap="round"/>${[0,1,2,3].map(i=>`<rect x="${248+i*36}" y="${198-i*16}" width="3" height="${12}" fill="${acc}"/>`).join("")}
+    </svg>`}
   if(kind==="sea"){
     let w="";for(let i=0;i<6;i++)w+=`<path d="M0 ${150+i*16} q50 -10 100 0 t100 0 t100 0 t100 0 t100 0 t100 0 t100 0 t100 0" stroke="#bfe0ea" stroke-width="2" fill="none" opacity="${.5-i*.06}"/>`;
     return `<svg viewBox="0 0 800 240" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="800" height="240" fill="#c9d8de"/><rect y="140" width="800" height="100" fill="#2f5f73"/>${w}<path d="M330 150 L470 150 L450 172 L350 172Z" fill="#5a3a24"/><rect x="398" y="60" width="5" height="90" fill="#3a2516"/><path d="M403 66 Q450 100 403 140Z" fill="#f2ead8"/><path d="M398 70 Q360 104 398 136Z" fill="${acc}"/></svg>`}

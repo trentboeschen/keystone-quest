@@ -154,7 +154,7 @@ Each file in `adventures/` is one adventure. The file name is its id (`pompeii.j
 }
 ```
 
-**Listing info:** `title`, `era`, `blurb`, `art` (`volcano`, `desert`, `castle`, `sea` or `none`) and `accent` (card colour).
+**Listing info:** `title`, `era`, `blurb`, `art` (`volcano`, `desert`, `castle`, `sea`, `civic` or `none`) and `accent` (card colour).
 
 **`published`:** `true` shows the adventure to players. `false` makes it a draft that only signed-in editors can see.
 

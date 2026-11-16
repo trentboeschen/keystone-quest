@@ -1,0 +1,301 @@
+{
+  "id": "section-504",
+  "title": "Sign 504: The Longest Sit-In",
+  "era": "San Francisco · 1977",
+  "blurb": "Join Judy Heumann and over a hundred disabled activists who refuse to leave a federal building until their civil rights are signed into law.",
+  "art": "civic",
+  "accent": "#5b3f8c",
+  "published": true,
+  "start": "start",
+  "sources": [
+    {
+      "title": "504 Protest: Disability Community and Civil Rights (National Park Service)",
+      "url": "https://home.nps.gov/articles/000/504-protest-disability-community-and-civil-rights.htm"
+    },
+    {
+      "title": "Short History of the 504 Sit-in, by Kitty Cone (DREDF)",
+      "url": "https://dredf.org/504-sit-in-20th-anniversary/short-history-of-the-504-sit-in/"
+    },
+    {
+      "title": "Patient No More: virtual tour and timeline (Longmore Institute, SF State)",
+      "url": "https://longmoreinstitute.sfsu.edu/patient-no-more/virtual-tour"
+    },
+    {
+      "title": "Disabled People's Forgotten Revolution (Longmore Institute)",
+      "url": "https://longmoreinstitute.sfsu.edu/archive/node/1237.html"
+    },
+    {
+      "title": "Making a Fuss About Disability Rights (The Regulatory Review)",
+      "url": "https://www.theregreview.org/2023/05/08/swadley-making-a-fuss-about-disability-rights/"
+    },
+    {
+      "title": "The 1977 Disability Rights Protest That Broke Records and Changed Laws (Atlas Obscura)",
+      "url": "https://AtlasObscura.com/Articles/504-Sit-in-San-Francisco-1977-Disability-Rights-Advocacy"
+    },
+    {
+      "title": "Judith Heumann (Jewish Women's Archive encyclopedia)",
+      "url": "https://cdn.jwa.org/encyclopedia/article/heumann-judith"
+    },
+    {
+      "title": "504 Sit-In: Winning Rights for the Disabled (NPR)",
+      "url": "https://www.npr.org/2002/04/28/1142484/504-sit-in-winning-rights-for-the-disabled"
+    }
+  ],
+  "scenes": {
+    "start": {
+      "text": "San Francisco, April 5, 1977. You are seventeen and you use a wheelchair, like Judy Heumann, who is leading the rally outside the federal building. Afterward, more than a hundred of you go up to the regional offices of the Department of Health, Education and Welfare. Evening comes, and the guards announce that the building is closing.",
+      "fact": "Section 504, passed in 1973, banned discrimination against disabled people by anything receiving federal money. But the rules to enforce it went unsigned for four years.",
+      "choices": [
+        {
+          "text": "stay and sit down",
+          "next": "night1"
+        },
+        {
+          "text": "go home for tonight",
+          "next": "leave"
+        }
+      ]
+    },
+    "leave": {
+      "text": "At the elevator, Kitty Cone, one of the organizers, stops you. Officials have made a new rule, she explains: anyone who leaves the building will not be allowed back in. If you go now, you are gone for good.",
+      "fact": "Health department officials did ban protesters who left from coming back in. They hoped the sit-in would shrink until it fell apart.",
+      "choices": [
+        {
+          "text": "stay here after all",
+          "next": "night1"
+        },
+        {
+          "text": "head home anyway",
+          "next": "home"
+        }
+      ]
+    },
+    "home": {
+      "text": "At home you watch the news. Sit-ins in other cities are ending as protesters run short of food, medicine and patience. You wonder whether one more person would have made a difference in San Francisco. Your story ends here.",
+      "fact": "Protests started in about ten cities that day. The San Francisco sit-in was the only one that lasted.",
+      "ending": "bad",
+      "choices": []
+    },
+    "night1": {
+      "text": "Your first night on the office floor. Nobody brought enough. Some protesters need help turning in their sleep, and strangers take turns doing it. By morning there is only coffee and a few boxes of doughnuts left for more than a hundred people.",
+      "fact": "Many protesters needed help to shift position at night to avoid painful pressure sores. Others in the building helped them.",
+      "choices": [
+        {
+          "text": "share out the doughnuts",
+          "next": "phones",
+          "gives": "hungry"
+        },
+        {
+          "text": "ask brad lomax for help",
+          "next": "panthers"
+        }
+      ]
+    },
+    "panthers": {
+      "text": "Brad Lomax, a protester who uses a wheelchair and belongs to the Black Panther Party, made a call. Now Panthers stand at the door with hot dinner, but the guards are blocking them. Brad asks you to go with him.",
+      "fact": "The Black Panthers cooked hot meals and carried them across the bay to the protesters every day until the sit-in ended.",
+      "timer": 28,
+      "timeout": "cold",
+      "choices": [
+        {
+          "text": "talk to the guards",
+          "next": "phones"
+        }
+      ]
+    },
+    "cold": {
+      "text": "While you hesitate, the argument at the door goes on and on. In the end the guards give way and the food comes in, but dinner is late and cold. It is still the best meal you have ever eaten.",
+      "choices": [
+        {
+          "text": "eat your cold dinner",
+          "next": "phones"
+        }
+      ]
+    },
+    "phones": {
+      "text": "Day three. Officials shut off the hot water and block outgoing phone calls. The protesters inside can no longer reach reporters, families or supporters. But outside on the plaza, a crowd keeps watch.",
+      "fact": "Supporters included the Black Panthers, Glide Memorial Church, labor unions, the gay community's Butterfly Brigade and even Safeway and McDonald's.",
+      "choices": [
+        {
+          "text": "wait for the lines back",
+          "next": "week2"
+        },
+        {
+          "text": "ask deaf friends to sign",
+          "next": "windows",
+          "gives": "link"
+        }
+      ]
+    },
+    "windows": {
+      "text": "Deaf protesters press against the fourth-floor windows and sign to people down on the plaza, who sign back. TV cameras are setting up below for the evening news. Somebody hands you a note to pass to the signers.",
+      "fact": "When the phones were cut, Deaf protesters used American Sign Language through the windows to send news between the people inside and supporters outside.",
+      "timer": 28,
+      "timeout": "late",
+      "choices": [
+        {
+          "text": "pass the note along",
+          "next": "week2"
+        }
+      ]
+    },
+    "late": {
+      "text": "By the time the note reaches the window, the camera crews are packing up. The message will have to wait for tomorrow's news. Still, the signers keep the plaza informed all evening.",
+      "choices": [
+        {
+          "text": "try again tomorrow",
+          "next": "week2"
+        }
+      ]
+    },
+    "week2": {
+      "text": "A week in. Outside, supporters keep a vigil. Inside, people sleep on mattresses sent over by the mayor and hold meetings late into the night. But everyone is tired, and some are sick.",
+      "fact": "Mayor George Moscone sent mattresses and arranged portable showers for the protesters.",
+      "choices": [
+        {
+          "text": "greet the monday staff",
+          "next": "daffodils",
+          "lacks": "hungry"
+        },
+        {
+          "text": "keep going on empty",
+          "next": "daffodils",
+          "needs": "hungry,link"
+        },
+        {
+          "text": "count who is still here",
+          "next": "collapse",
+          "needs": "hungry",
+          "lacks": "link"
+        }
+      ]
+    },
+    "collapse": {
+      "text": "Hungry and cut off from the outside, people begin to leave one by one. Each one who goes cannot come back. Soon there are too few of you to hold the office, and the guards lock the doors behind the last of you. Your story ends here.",
+      "fact": "In New York, protesters had to leave when they ran out of food and medicine. Help from allies is a big reason San Francisco held on.",
+      "ending": "bad",
+      "choices": []
+    },
+    "daffodils": {
+      "text": "Monday, April 11. Health department staff arrive for work and step around the sleeping bags. Some look nervous. They are ordinary office workers, not the people who decide about Section 504.",
+      "fact": "On day seven, the protesters handed out daffodils to the staff arriving for work.",
+      "choices": [
+        {
+          "text": "hand out daffodils",
+          "next": "hearing"
+        },
+        {
+          "text": "block their office doors",
+          "next": "hearing",
+          "gives": "hostile"
+        }
+      ]
+    },
+    "hearing": {
+      "text": "April 15. Two congressmen hold a hearing inside the occupied office. Califano has sent an official, Eugene Eidenberg, who keeps nodding politely. Judy tells him to stop nodding when he doesn't understand. Then it is your turn at the microphone.",
+      "fact": "Judy Heumann challenged Eidenberg face to face. Protester after protester described being shut out of schools, jobs and buses, and the hearing lasted about five hours.",
+      "choices": [
+        {
+          "text": "heckle the official",
+          "next": "deal",
+          "gives": "hostile"
+        },
+        {
+          "text": "tell your own story",
+          "next": "deal"
+        },
+        {
+          "text": "stay quiet at the back",
+          "next": "deal"
+        }
+      ]
+    },
+    "deal": {
+      "text": "A rumor spreads: Califano will sign at last, but only a weaker version, with changes that would leave loopholes. Some exhausted protesters want to take it and go home.",
+      "fact": "Organizers believed Califano was working with lobbyists who wanted to weaken the rules, so they demanded the original regulations, unchanged.",
+      "choices": [
+        {
+          "text": "take the weaker deal",
+          "next": "weakened"
+        },
+        {
+          "text": "hold out for the full rules",
+          "next": "delegation"
+        }
+      ]
+    },
+    "weakened": {
+      "text": "You all go home. Califano signs the weaker rules, and newspapers call it a compromise. But schools, hospitals and transit systems find gaps in them for years. You wonder what would have happened if you had held out.",
+      "fact": "Kitty Cone wrote that it was crucial for the rules to be strong, because Section 504 would cover every place that received federal money.",
+      "ending": "mixed",
+      "choices": []
+    },
+    "delegation": {
+      "text": "The group decides to take the fight to Washington. Protesters debate who should go: people who can manage a long trip, and voices the officials will remember. A labor union offers to help pay the way.",
+      "fact": "The International Association of Machinists helped send the delegation of about 25 protesters to Washington.",
+      "choices": [
+        {
+          "text": "keep everyone right here",
+          "next": "waiting",
+          "gives": "nodelegation"
+        },
+        {
+          "text": "vote to send a delegation",
+          "next": "dc"
+        }
+      ]
+    },
+    "dc": {
+      "text": "The delegation keeps up vigils night after night outside Califano's house and goes to the church where President Carter worships. Back in San Francisco, you follow every report and keep the office running.",
+      "fact": "Both Califano and President Carter slipped out through back doors to avoid the protesters.",
+      "choices": [
+        {
+          "text": "keep the vigil going",
+          "next": "signing"
+        }
+      ]
+    },
+    "waiting": {
+      "text": "Days drag by. Without anyone in Washington, officials there find it easy to ignore a protest three thousand miles away. More people get sick. The newspapers start to lose interest.",
+      "choices": [
+        {
+          "text": "keep waiting it out",
+          "next": "signing"
+        }
+      ]
+    },
+    "signing": {
+      "text": "Thursday, April 28. Someone runs in with a radio, shouting for quiet. A hundred people hold their breath.",
+      "fact": "Califano signed the regulations on April 28, 1977. Sources give the sit-in's length as 25 to 28 days, because a few protesters stayed on after the main group left.",
+      "choices": [
+        {
+          "text": "turn up the radio",
+          "next": "signed",
+          "lacks": "hostile,nodelegation"
+        },
+        {
+          "text": "hear the late news",
+          "next": "strained",
+          "needs": "hostile"
+        },
+        {
+          "text": "wait for the next report",
+          "next": "strained",
+          "needs": "nodelegation"
+        }
+      ]
+    },
+    "signed": {
+      "text": "Califano has signed the regulations, unchanged. The office erupts. Two days later, on April 30, you roll out of the federal building into the sunshine with the others. A new chapter of the disability rights movement has begun.",
+      "fact": "Section 504 became the model for the Americans with Disabilities Act of 1990, which extended these protections far beyond places that received federal money.",
+      "ending": "good",
+      "choices": []
+    },
+    "strained": {
+      "text": "The rules are signed at last, but it took longer than it should have and cost you friends and support along the way. Fewer of you are left to celebrate, and some newspapers remember the anger more than the cause.",
+      "fact": "Judy Heumann had polio at 18 months old. In 1970 New York refused her a teaching license, calling her wheelchair a fire hazard. She sued and became the city's first teacher who used a wheelchair.",
+      "ending": "mixed",
+      "choices": []
+    }
+  }
+}

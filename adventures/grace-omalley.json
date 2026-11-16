@@ -1,0 +1,311 @@
+{
+  "id": "grace-omalley",
+  "title": "The Pirate Queen's Petition",
+  "era": "Clew Bay to Greenwich · 1593",
+  "blurb": "Sail with Gráinne Ní Mháille, the pirate queen of Connacht, to plead for her son's life before Elizabeth I.",
+  "art": "sea",
+  "accent": "#245b78",
+  "published": true,
+  "start": "start",
+  "sources": [
+    {
+      "title": "Grace O'Malley: pirate history, fact, fiction and legend (Royal Museums Greenwich)",
+      "url": "https://www.rmg.co.uk/stories/grace-o-malley-pirate-history-fact-fiction-legend"
+    },
+    {
+      "title": "Meeting Grace O'Malley, Ireland's pirate queen (The National Archives)",
+      "url": "https://blog.nationalarchives.gov.uk/meeting-grace-omalley-irelands-pirate-queen/"
+    },
+    {
+      "title": "Gráinne Mhaol, pirate queen of Connacht: behind the legend (History Ireland)",
+      "url": "https://historyireland.com/?p=3311"
+    },
+    {
+      "title": "Gráinne O'Malley, from the Dictionary of Irish Biography (Infinite Women)",
+      "url": "https://www.infinite-women.com/women/grainne-omalley/"
+    },
+    {
+      "title": "Greenwich Palace list entry (Historic England)",
+      "url": "https://www.historicengland.org.uk/listing/the-list/list-entry/1410710"
+    },
+    {
+      "title": "Legends of Howth Castle (Howth Castle)",
+      "url": "https://howthcastle.ie/about/legends/"
+    },
+    {
+      "title": "Grace O'Malley, quoting biographer Anne Chambers on her languages (Mariner.ie)",
+      "url": "https://mariner.ie/?p=1509"
+    },
+    {
+      "title": "Grace O'Malley (Wikipedia)",
+      "url": "https://en.wikipedia.org/wiki/Grace_O%27Malley"
+    }
+  ],
+  "scenes": {
+    "start": {
+      "text": "Clew Bay, summer 1593. Rain drums on the walls of Rockfleet Castle as a rider brings terrible news. Sir Richard Bingham, the English governor, has seized Tibbot, Gráinne's youngest son, and charged him with treason. Gráinne turns to her captains, and to you, the youngest of her crew.",
+      "fact": "Gráinne Ní Mháille, known in English as Grace O'Malley, was born around 1530. Her strongholds guarded Clew Bay in County Mayo, on Clare Island and at Rockfleet.",
+      "choices": [
+        {
+          "text": "raid binghams lands",
+          "next": "raid",
+          "gives": "trouble"
+        },
+        {
+          "text": "sail to the queen in london",
+          "next": "petition"
+        },
+        {
+          "text": "march on athlone castle",
+          "next": "athlone"
+        }
+      ]
+    },
+    "raid": {
+      "text": "Your galleys slip along the coast at night and drive off cattle from Bingham's garrison lands. It feels like justice. But by morning, riders are galloping for Dublin with reports of a new O'Malley rebellion. Gráinne frowns. This is exactly the excuse Bingham wanted.",
+      "fact": "Bingham became governor of Connacht in 1584. He seized Gráinne's cattle and ships, cutting off much of the income her family lived on.",
+      "choices": [
+        {
+          "text": "sail on to london anyway",
+          "next": "petition"
+        }
+      ]
+    },
+    "athlone": {
+      "text": "Athlone Castle stands far inland on the River Shannon, behind Bingham's garrisons. Gráinne's strength is her fleet, and galleys cannot cross Connacht. After two days of hard marching the scouts return: the walls are strong and the guards are doubled. Gráinne turns back toward the sea.",
+      "fact": "Bingham charged Tibbot with treason, a crime punished by death, and held him prisoner in Athlone Castle.",
+      "choices": [
+        {
+          "text": "head back to the galleys",
+          "next": "petition"
+        }
+      ]
+    },
+    "petition": {
+      "text": "Before she can see the queen, Gráinne must be invited. A scribe dips his pen to write her petition: Tibbot freed, her seized lands returned. Then he looks up. What will Gráinne offer Queen Elizabeth in return? She asks what you think.",
+      "fact": "In July 1593 a scribe wrote a petition for Gráinne asking the queen for support in her old age and leave to fight the queen's enemies. It survives in The National Archives in London.",
+      "choices": [
+        {
+          "text": "promise to fight her enemies",
+          "next": "launch",
+          "gives": "loyal"
+        },
+        {
+          "text": "demand all her cattle back",
+          "next": "launch"
+        },
+        {
+          "text": "threaten more raids at sea",
+          "next": "launch"
+        }
+      ]
+    },
+    "launch": {
+      "text": "Gráinne's galley is long and low, with one great sail and thirty oars. You take your place on a rowing bench as the crew pulls out of Clew Bay, past the cliffs of Clare Island and into the grey Atlantic.",
+      "fact": "Her galleys grew out of the Viking longship design. They were shallow enough to sail close to the shore, and English records say each could carry around 200 men.",
+      "choices": [
+        {
+          "text": "row hard for the south",
+          "next": "storm"
+        }
+      ]
+    },
+    "storm": {
+      "text": "Off the south coast a storm rolls in. The sail strains and the mast groans. If the wind tears the sail, you will lose days. Gráinne roars an order over the waves.",
+      "timer": 28,
+      "timeout": "torn",
+      "choices": [
+        {
+          "text": "lower the sail and row",
+          "next": "night"
+        }
+      ]
+    },
+    "torn": {
+      "text": "Too late. With a crack like a musket shot, the sail splits from top to bottom. The crew lashes it down and rows on, soaked and freezing. Mending it at anchor costs three precious days.",
+      "choices": [
+        {
+          "text": "keep rowing for england",
+          "next": "night"
+        }
+      ]
+    },
+    "night": {
+      "text": "Calm at last. As the galley creeps along the coast, an old sailor tells a story by lantern light: how Gráinne once found the gates of Howth Castle shut against her at dinnertime, and what she did about it.",
+      "fact": "Legend says Gráinne carried off the young heir of Howth Castle in 1576 until his family promised never to close their gates at dinner. The castle still lays an extra place at table.",
+      "choices": [
+        {
+          "text": "ask how the story ends",
+          "next": "dover"
+        }
+      ]
+    },
+    "dover": {
+      "text": "The white cliffs of Dover rise ahead. English warships guard the narrow strait, and an Irish galley full of armed men looks exactly like what Bingham calls her: a pirate. A warship swings toward you.",
+      "fact": "Gráinne sailed south around Ireland, east through the Straits of Dover and up the River Thames to reach the queen.",
+      "choices": [
+        {
+          "text": "raise a white flag and wait",
+          "next": "thames"
+        },
+        {
+          "text": "slip past them at nightfall",
+          "next": "chase"
+        }
+      ]
+    },
+    "chase": {
+      "text": "Nightfall. With rags muffling the oars, you creep along under the cliffs. Then a lantern flares on the warship's deck and a gun booms. Gráinne hisses for every oar to pull.",
+      "timer": 28,
+      "timeout": "caught",
+      "choices": [
+        {
+          "text": "pull with all your might",
+          "next": "thames"
+        }
+      ]
+    },
+    "caught": {
+      "text": "The warship runs you down. Sailors swarm aboard and an officer demands to know why armed Irish rebels are sneaking toward London. Gráinne shows him her petition and talks fast. You are let go after two days under guard, but word of it races ahead of you.",
+      "choices": [
+        {
+          "text": "sail on up the thames",
+          "next": "thames",
+          "gives": "trouble"
+        }
+      ]
+    },
+    "thames": {
+      "text": "The galley rows up the River Thames, past ships from every corner of the world, to Greenwich Palace. But a letter has arrived before you. Bingham has written to the court that Gráinne is a traitor who deserves to hang.",
+      "fact": "Bingham called Gráinne “the nurse to all rebellions in the province for forty years.”",
+      "choices": [
+        {
+          "text": "wait for word from court",
+          "next": "articles"
+        }
+      ]
+    },
+    "articles": {
+      "text": "A messenger brings a paper from Lord Burghley, the queen's chief minister. It holds eighteen questions: who her family are, whom she married, how she has lived. Every answer will be checked against Bingham's reports. Gráinne asks you to help her choose how to answer.",
+      "fact": "Burghley's eighteen “Articles of Interrogatory” and Gráinne's answers still survive. They are one of the main records of her life, because Irish chronicles of the time left her out.",
+      "choices": [
+        {
+          "text": "deny every raid at sea",
+          "next": "doubt"
+        },
+        {
+          "text": "tell the plain truth",
+          "next": "gate",
+          "gives": "honest"
+        },
+        {
+          "text": "boast of her sea battles",
+          "next": "doubt"
+        }
+      ]
+    },
+    "doubt": {
+      "text": "The scribe reads the draft aloud and goes pale. Burghley already has Bingham's reports of her raids. Lies will be spotted at once, and boasting will sound like a threat. The ink is still wet.",
+      "choices": [
+        {
+          "text": "start again and be honest",
+          "next": "gate",
+          "gives": "honest"
+        },
+        {
+          "text": "send it as it is",
+          "next": "gate",
+          "gives": "doubt"
+        }
+      ]
+    },
+    "gate": {
+      "text": "September 1593. At the gates of Greenwich Palace, guards search every visitor. Gráinne has slipped her small dagger to you to carry. A guard holds out his hand.",
+      "fact": "Greenwich Palace was where Elizabeth I was born in 1533. She spent more and more time there as she grew older.",
+      "choices": [
+        {
+          "text": "give the guard the dagger",
+          "next": "audience"
+        },
+        {
+          "text": "keep it hidden in your belt",
+          "next": "dagger"
+        }
+      ]
+    },
+    "dagger": {
+      "text": "The guard finds it in seconds. Swords scrape from their scabbards. Gráinne steps forward and says calmly that the blade is only for protection on a long journey. A tense silence, then the queen's officer waves you through.",
+      "fact": "A famous legend says guards found a dagger on Gráinne herself and the queen let her keep it. Like many stories about the meeting, it comes from folklore, not records.",
+      "choices": [
+        {
+          "text": "follow her inside",
+          "next": "audience",
+          "gives": "suspect"
+        }
+      ]
+    },
+    "audience": {
+      "text": "The queen sits in a great carved chair, glittering with pearls. Gráinne stands before her, grey-haired and weathered by the sea. Two women, both about sixty, both used to giving orders. Elizabeth asks what Gráinne will give in return for her help.",
+      "fact": "Legend says they spoke Latin, sharing no other language. But Gráinne's biographer Anne Chambers points out that her letters show she understood and spoke English.",
+      "choices": [
+        {
+          "text": "demand bingham be punished",
+          "next": "refused"
+        },
+        {
+          "text": "offer her ships and men",
+          "next": "verdict"
+        }
+      ]
+    },
+    "verdict": {
+      "text": "The two women talk for a long time. Then the queen calls for her secretary. Everything now depends on what the court believes about Gráinne: her petition, her answers, and how her people have behaved since they arrived.",
+      "choices": [
+        {
+          "text": "hear the queen give her answer",
+          "next": "freedom",
+          "needs": "honest,loyal",
+          "lacks": "trouble,suspect,doubt"
+        },
+        {
+          "text": "wait for the queen to decide",
+          "next": "partial",
+          "needs": "trouble"
+        },
+        {
+          "text": "listen to the royal answer",
+          "next": "partial",
+          "needs": "suspect"
+        },
+        {
+          "text": "await her final word",
+          "next": "partial",
+          "needs": "doubt"
+        },
+        {
+          "text": "bow and hear her verdict",
+          "next": "partial",
+          "lacks": "loyal"
+        }
+      ]
+    },
+    "freedom": {
+      "text": "The queen writes to Bingham herself: Tibbot is to be set free, and Gráinne left in peace to earn her living by land and sea. Bingham is furious, but he must obey. Weeks later your galley rows home into Clew Bay with Tibbot aboard.",
+      "fact": "Tibbot na Long, “Tibbot of the Ships”, later became Sir Theobald Bourke. In 1626 he was made the first Viscount Mayo.",
+      "ending": "good",
+      "choices": []
+    },
+    "partial": {
+      "text": "The queen orders Tibbot released, but doubts about Gráinne linger at court. Bingham is told to keep a close watch on her. Soldiers are stationed on her lands, eating her food, and English officers sail with her galleys wherever she goes.",
+      "fact": "Even after Gráinne's success, Bingham dragged his feet and stationed soldiers on her lands. In 1595 she wrote to the queen again.",
+      "ending": "mixed",
+      "choices": []
+    },
+    "refused": {
+      "text": "Elizabeth's face hardens. Nobody gives orders to the Queen of England. The audience is over. Gráinne sails home with nothing, and Tibbot stays locked in Athlone Castle, waiting for a trial he may not survive. Your story ends here.",
+      "fact": "Bingham told the court he had enough evidence to hang Gráinne. Elizabeth chose to hear her anyway, against her governor's advice.",
+      "ending": "bad",
+      "choices": []
+    }
+  }
+}

@@ -1,16 +1,44 @@
 # Keystone Quest (Apache). Nginx users: see README.
+#
+# Works at a site root, in a subfolder at any depth, and inside a Drupal 8–11 site
+# (e.g. web/games/keystone-quest/). Nothing here assumes where the game lives.
 
+# --- Running inside Drupal (or any app with its own rewrite rules) ---------------
+# Turning on rewriting here means the parent folder's rewrite rules no longer apply
+# to this folder. That switches off two Drupal rules that would break the game:
+#   * its front controller, which sends unknown paths to Drupal's index.php
+#   * its ban on PHP files in subfolders, which would make api.php "Forbidden"
+# Don't add "RewriteOptions Inherit" here, or both come back.
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+
+  # Because Drupal's rules are off here, re-add protection for files that
+  # shouldn't be downloadable. Patterns are relative, so they work at any depth.
+  RewriteRule (^|/)\.(?!well-known/) - [F]
+  RewriteRule ^(docker|adventures)(/|$) - [F]
+  RewriteRule (^|/)(Dockerfile|render\.yaml|README\.md|config\.php-sample)$ - [F]
+</IfModule>
+
+# Without mod_rewrite, still hide a git checkout.
+<IfModule !mod_rewrite.c>
+  <IfModule mod_alias.c>
+    RedirectMatch 404 /\.git
+  </IfModule>
+</IfModule>
+
+# --- File types and freshness ---------------------------------------------------
 # Serve the home-screen app manifest with the right type.
 AddType application/manifest+json .webmanifest
+
+# Drupal caches every file for two weeks by default (mod_expires). Turn that off
+# here so game updates reach players straight away.
+<IfModule mod_expires.c>
+  ExpiresActive Off
+</IfModule>
 
 # The page and service worker must be re-checked on every visit so updates arrive.
 <IfModule mod_headers.c>
   <FilesMatch "^(index\.html|sw\.js|manifest\.webmanifest)$">
     Header set Cache-Control "no-cache"
   </FilesMatch>
-</IfModule>
-
-# If you deployed with git clone, keep the .git folder private.
-<IfModule mod_alias.c>
-  RedirectMatch 404 /\.git
 </IfModule>

@@ -14,7 +14,7 @@ A typing game for kids: branching history adventures where you type your choices
 | `Dockerfile`, `docker/`, `.dockerignore`, `render.yaml` | Run it in a container, set up for Render. |
 | `.claude/skills/write-adventure/` | A Claude Code skill for researching and writing new adventures, with a validator. |
 | `manifest.webmanifest`, `sw.js`, `icons/` | Make it installable as a home-screen app that works offline. |
-| `.htaccess` | Sets the right file type for the app manifest, keeps the page and service worker fresh, and hides `.git` (Apache only). |
+| `.htaccess` | Lets the game run in any folder, including inside Drupal. Sets the app manifest's file type, keeps the page and service worker fresh, and hides repo-only files (Apache only). |
 | `adventures/.htaccess` | Stops people downloading the files directly, so drafts stay hidden (Apache only). |
 
 ## Setup
@@ -47,6 +47,20 @@ Needs PHP 7.4 or newer. No database.
 Run `git pull` on the server. Your `config.php` and the `adventures/_backups/` folder are ignored by git, so pulling never overwrites them.
 
 Adventures you create or edit on the server change files in `adventures/`. To keep them in the repository, commit them from the server, or download them with **Export** and commit them from your own computer. If you edit the same adventure in both places, `git pull` reports a conflict instead of silently replacing either version.
+
+### Where it can live
+
+The game can live at a site root (`https://example.com/`) or in a folder at any depth (`https://example.com/games/kids/keystone-quest/`). Every link it uses is relative to its own folder, so just upload or clone it wherever you like. If someone opens the folder without the final slash, the page adds it.
+
+### Inside a Drupal site
+
+The game can live in a folder inside a Drupal 8, 9, 10 or 11 site. Put the folder in Drupal's web root: the folder with Drupal's `index.php`, usually `web/` on Composer installs. For example, `web/games/keystone-quest/` serves at `https://example.com/games/keystone-quest/`. Avoid `sites/*/files`, where Drupal switches off PHP.
+
+The game's own `.htaccess` handles the two Drupal rules that would otherwise break it:
+- **PHP in subfolders:** Drupal blocks PHP files in subfolders, which would make `api.php` return Forbidden. Rewrite rules switched on in the game's folder replace Drupal's there, so `api.php` runs. Those rules also re-block files like `README.md`, `.git` and `adventures/`.
+- **Caching:** Drupal tells browsers to cache files for two weeks, which would hold back game updates. The game's folder switches that off.
+
+You don't need to edit Drupal's `.htaccess`, and Drupal is unaffected outside the game's folder. Drupal's Apache setup already allows folder `.htaccess` files (`AllowOverride All`), which the game needs.
 
 ### If your server uses nginx instead of Apache
 

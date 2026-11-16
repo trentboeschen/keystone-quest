@@ -3,6 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<script>
+/* All links in the game are relative, so it runs at a site root or in any subfolder.
+   If the folder was opened without its trailing slash (/games/keystone), add it so
+   those links resolve inside the game's folder. */
+if(!/\/$|\.html?$/.test(location.pathname))location.replace(location.pathname+"/"+location.search+location.hash);
+</script>
 <title>Keystone Quest</title>
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#b8352a">

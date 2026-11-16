@@ -7,19 +7,31 @@
 // Each adventure file holds its listing info (title, era, blurb, art, accent),
 // a "published" true/false, an "updated" timestamp, the start scene and the scenes.
 
-if (!is_file(__DIR__ . '/config.php')) {
+// Settings come from config.php when it exists. Environment variables fill in anything
+// it doesn't set, which is how container hosts like Render configure the game:
+//   KQ_EDIT_PASSWORD, KQ_SHOW_TYPING_SPEED, KQ_BACKUPS_PER_ADVENTURE, KQ_DATA_DIR
+if (is_file(__DIR__ . '/config.php')) require __DIR__ . '/config.php';
+function env_setting(string $key): ?string {
+    $v = getenv($key);
+    return ($v === false || $v === '') ? null : $v;
+}
+if (!defined('EDIT_PASSWORD') && env_setting('KQ_EDIT_PASSWORD') !== null) define('EDIT_PASSWORD', env_setting('KQ_EDIT_PASSWORD'));
+if (!defined('SHOW_TYPING_SPEED') && env_setting('KQ_SHOW_TYPING_SPEED') !== null) define('SHOW_TYPING_SPEED', filter_var(env_setting('KQ_SHOW_TYPING_SPEED'), FILTER_VALIDATE_BOOLEAN));
+if (!defined('BACKUPS_PER_ADVENTURE')) define('BACKUPS_PER_ADVENTURE', max(1, (int)(env_setting('KQ_BACKUPS_PER_ADVENTURE') ?? 20)));
+
+if (!defined('EDIT_PASSWORD')) {
     http_response_code(500);
     header('Content-Type: application/json; charset=utf-8');
-    echo json_encode(['error' => 'Setup needed: copy config.php-sample to config.php and set your editor password.']);
+    echo json_encode(['error' => 'Setup needed: copy config.php-sample to config.php and set your editor password, or set the KQ_EDIT_PASSWORD environment variable.']);
     exit;
 }
-require __DIR__ . '/config.php';
 
 header('Content-Type: application/json; charset=utf-8');
 header('Cache-Control: no-store');
 
-const ADV_DIR = __DIR__ . '/adventures';
-const BACKUP_DIR = ADV_DIR . '/_backups';
+// Where adventure files live. On Render, point KQ_DATA_DIR at a persistent disk.
+define('ADV_DIR', rtrim(env_setting('KQ_DATA_DIR') ?? (__DIR__ . '/adventures'), '/'));
+define('BACKUP_DIR', ADV_DIR . '/_backups');
 const MAX_BYTES = 1048576;
 
 function out(int $code, $data): void {

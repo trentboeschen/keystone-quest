@@ -1,0 +1,20 @@
+# Render Blueprint for Keystone Quest.
+# New > Blueprint in the Render Dashboard, pick this repo, then enter an editor password when asked.
+services:
+  - type: web
+    name: keystone-quest
+    runtime: docker
+    plan: starter            # persistent disks need a paid instance type
+    healthCheckPath: /
+    autoDeploy: true         # redeploys on every push to the connected branch
+    envVars:
+      - key: KQ_EDIT_PASSWORD
+        sync: false          # Render asks you for this; it isn't stored in the repo
+      - key: KQ_SHOW_TYPING_SPEED
+        value: "true"
+      - key: KQ_DATA_DIR
+        value: /var/data/adventures
+    disk:
+      name: keystone-data
+      mountPath: /var/data
+      sizeGB: 1

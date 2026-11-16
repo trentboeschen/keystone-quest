@@ -11,6 +11,7 @@ A typing game for kids: branching history adventures where you type your choices
 | `config.php-sample` | Template for your settings. Copy it to `config.php`. |
 | `config.php` | Your editor password, backup count and whether players see their typing speed. You create it; git ignores it, so your password never gets committed. |
 | `adventures/` | One `.json` file per adventure. The game loads every valid file in here; there is no manifest. |
+| `Dockerfile`, `docker/`, `.dockerignore`, `render.yaml` | Run it in a container, set up for Render. |
 | `.claude/skills/write-adventure/` | A Claude Code skill for researching and writing new adventures, with a validator. |
 | `manifest.webmanifest`, `sw.js`, `icons/` | Make it installable as a home-screen app that works offline. |
 | `.htaccess` | Sets the right file type for the app manifest, keeps the page and service worker fresh, and hides `.git` (Apache only). |
@@ -60,6 +61,53 @@ location ~ /typing/(index\.html|sw\.js|manifest\.webmanifest)$ { add_header Cach
 Also make sure your `mime.types` maps `webmanifest` to `application/manifest+json`. Adjust `/typing/` to wherever you put the game.
 
 The home-screen app and offline play need HTTPS, which most hosts provide free through Let's Encrypt.
+
+## Deploying on Render
+
+Render has no built-in PHP support, so the game runs as a Docker service: PHP 8.3 with Apache, built from the `Dockerfile`.
+
+**With the Blueprint (recommended):**
+1. In the Render Dashboard choose **New → Blueprint** and pick this repository.
+2. Enter an editor password when Render asks for `KQ_EDIT_PASSWORD`.
+3. Render creates a **Starter** web service with a 1 GB persistent disk at `/var/data`, and redeploys on every push to `main`.
+
+**By hand:** create a **Web Service** from the repo with the **Docker** runtime. Then:
+- add a disk mounted at `/var/data`
+- set the environment variables below
+
+### Saved adventures need a disk
+
+Render wipes a service's files on every deploy and restart. Adventures saved from the editor survive only on a persistent disk, and disks need a paid instance type such as Starter. On the free type the game runs, but editor changes vanish on the next deploy or spin-down. Free services also sleep when idle, so the first visit afterwards is slow.
+
+On first start, the container copies the bundled adventures from `adventures/` onto the disk:
+- Ones you've edited in the game are never overwritten.
+- Ones you've deleted don't come back.
+- A new adventure file pushed to the repo is copied over on the next deploy.
+
+To change a bundled adventure that's already on the disk, edit it in the game, or use **Import** with the new file.
+
+### Settings as environment variables
+
+`config.php` isn't in the repo, so on Render the game reads its settings from environment variables. If both exist, `config.php` wins.
+
+| Variable | Same as | Notes |
+|---|---|---|
+| `KQ_EDIT_PASSWORD` | `EDIT_PASSWORD` | Required for editing. Set it as a secret in Render. |
+| `KQ_SHOW_TYPING_SPEED` | `SHOW_TYPING_SPEED` | `true` or `false`. |
+| `KQ_BACKUPS_PER_ADVENTURE` | `BACKUPS_PER_ADVENTURE` | Defaults to 20. |
+| `KQ_DATA_DIR` | — | Where adventure files and backups live. On Render, `/var/data/adventures`. It's outside the website folder, so drafts stay private. |
+
+Render serves the site over HTTPS, so the home-screen app and offline play work there without extra setup.
+
+### Running the container yourself
+
+```
+docker build -t keystone-quest .
+docker run -p 8080:10000 -e KQ_EDIT_PASSWORD=change-me \
+  -e KQ_DATA_DIR=/data/adventures -v keystone-data:/data keystone-quest
+```
+
+Then open http://localhost:8080.
 
 ## Adventure files
 

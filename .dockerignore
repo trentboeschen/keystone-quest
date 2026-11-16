@@ -1,0 +1,13 @@
+# Kept out of the image (and so off the website)
+.git
+.gitignore
+.claude
+.dockerignore
+Dockerfile
+render.yaml
+README.md
+config.php
+adventures/_backups
+adventures/.lock
+adventures/*.tmp
+.DS_Store

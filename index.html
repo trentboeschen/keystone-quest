@@ -257,7 +257,7 @@ function signIn(then){
   modal(`<h3>Editor sign-in</h3><p class="small">Enter the editor password from config.php. This browser will remember it until you sign out.</p><label for="ek">Password</label><input id="ek" type="password" autocomplete="current-password"><div class="row" style="margin-top:12px"><button class="pri" data-act="signInGo">Sign in</button><button data-act="close">Cancel</button><span class="small" id="ekMsg"></span></div>`);
 }
 
-function renderPlayers(){$("#player").innerHTML=players.map(p=>`<option ${p===cur?"selected":""}>${esc(p)}</option>`).join("")+`<option value="__add">+ Add player</option>`;$("#soundBtn").textContent=sound?"Sound on":"Sound off";
+function renderPlayers(){$("#player").innerHTML=players.map(p=>`<option ${p===cur?"selected":""}>${esc(p)}</option>`).join("")+`<option value="__rename">Rename this player</option><option value="__add">+ Add player</option>`;$("#soundBtn").textContent=sound?"Sound on":"Sound off";
   const eb=$("#editBtn");if(eb){eb.textContent=isEditor?"Sign out of editing":"Editor";eb.dataset.act=isEditor?"signOut":"signIn";eb.hidden=!editingOn&&!isEditor}}
 
 /* ---------- sound ---------- */
@@ -373,7 +373,7 @@ function renderLibrary(){
   const status=loadState==="loading"?`<p class="small">Loading adventures…</p>`:loadState==="error"?`<div class="warn">${esc(loadErr)} <button data-act="reload" style="margin-left:8px">Try again</button></div>`:!ADVS.length?`<p class="small">No adventures are published yet.</p>`:"";
   const codex=allAdv().map(a=>{const f=(P.facts[a.id]||[]).filter(id=>a.scenes[id]&&a.scenes[id].fact);if(!f.length)return"";return `<details><summary>${esc(a.title)} · ${f.length}</summary><ul>${f.map(id=>`<li>${esc(a.scenes[id].fact)}</li>`).join("")}</ul></details>`}).join("");
   app.innerHTML=`<div class="wrap"><div class="lib"><div><div class="hero"><h1>Type your way through history</h1><p>Read each scene, then type a choice to decide what happens. Careful readers find the best endings, because the right move depends on what really happened.</p></div>${status}<div class="cards">${cards}${isEditor?`<button class="card newcard" data-act="new"><h3>New adventure</h3><span class="small">Write a branching story in the editor</span></button>`:""}</div></div>
-  <aside class="side"><div class="box"><h3>${esc(cur)}</h3><div class="small">${totalH+totalM?`Overall accuracy ${Math.round(100*totalH/(totalH+totalM))}% across ${totalH+totalM} keys${SHOW_SPEED&&overallWpm()?`. Typing speed ${overallWpm()} wpm`:""}`:"No typing yet. Pick an adventure to start."}</div>
+  <aside class="side"><div class="box"><div class="row"><h3 style="margin:0 auto 0 0">${esc(cur)}</h3><button class="ghost" data-act="renameP">Rename</button></div><div class="small">${totalH+totalM?`Overall accuracy ${Math.round(100*totalH/(totalH+totalM))}% across ${totalH+totalM} keys${SHOW_SPEED&&overallWpm()?`. Typing speed ${overallWpm()} wpm`:""}`:"No typing yet. Pick an adventure to start."}</div>
   <label for="diff">Difficulty</label><select id="diff">${Object.entries(DIFF).map(([k,v])=>`<option value="${k}" ${k===diffKey()?"selected":""}>${v.label}</option>`).join("")}</select><div class="small" id="diffNote" style="margin-top:4px">${esc(DIFF[diffKey()].note)}</div>${keys.length?`<div class="small" style="margin-top:12px">Keys to practise</div><div class="tk">${keys.map(([k,v])=>`<span>${k===" "?"space":esc(k)}<b>${Math.round(v*100)}%</b></span>`).join("")}</div>`:""}
   <p class="small" style="margin:14px 0 0">Profiles, saved progress and scores for all ${players.length} ${players.length===1?"player":"players"} live in this browser. Download a backup to keep them safe or move them to another computer.</p><div class="row" style="margin-top:10px"><button data-act="dataOut">Download data</button><button data-act="dataIn">Import data</button></div></div>
   <div class="box"><h3>Badges</h3><div class="small">${earned.length} of ${shownBadges().length} earned</div>${earned.length?`<div class="mini">${earned.slice(0,8).map(b=>`<span title="${esc(b.name)}">${medal(b,true,40)}</span>`).join("")}</div>`:`<p class="small">Finish an adventure to earn your first one.</p>`}<button data-act="badges" style="margin-top:10px">See all badges</button></div>
@@ -629,6 +629,22 @@ function importAdv(txt){
   closeModal();openEditor(a,true);return null;
 }
 
+/* ---------- renaming a player ---------- */
+function renameDialog(){
+  modal(`<h3>Rename player</h3><label for="rn">Name</label><input id="rn" maxlength="24" autocomplete="off" value="${esc(cur)}"><div class="row" style="margin-top:12px"><button class="pri" data-act="renameGo">Save</button><button data-act="close">Cancel</button><span class="small" id="rnMsg"></span></div>`);
+  const f=$("#rn");if(f){f.focus();f.select()}
+}
+function renamePlayer(name){
+  name=name.trim();
+  if(!name)return "Enter a name.";
+  if(name===cur)return null;
+  if(players.includes(name))return "Another player already has that name.";
+  players=players.map(p=>p===cur?name:p);
+  if(stats[cur]){stats[name]=stats[cur];delete stats[cur]}
+  cur=name;ls.set("ks-players",players);ls.set("ks-cur",cur);saveStats();
+  return null;
+}
+
 /* ---------- player data backup ---------- */
 function backup(){return{app:"keystone",kind:"player-data",version:1,exported:new Date().toISOString(),players,current:cur,sound,stats}}
 function mergeStats(a,b){/* combine two copies of one player's data, keeping the most complete of each part */
@@ -675,6 +691,8 @@ document.addEventListener("click",async e=>{
     case "copy":{const a=clone(findAdv(id));a.title+=" (copy)";a.id=freeId(a.title);a.published=false;delete a.updated;return openEditor(a,true)}
     case "edit":return openEditor(findAdv(id));
     case "badges":return badgeGallery();
+    case "renameP":return renameDialog();
+    case "renameGo":{const err=renamePlayer($("#rn").value);if(err){$("#rnMsg").textContent=err;return}closeModal();renderPlayers();if(view==="library")renderLibrary();return}
     case "showkb":return focusTyping();
     case "hintOff":ls.set("ksq-hint-off",true);return renderLibrary();
     case "reload":loadState="loading";renderLibrary();await loadAdventures();return renderLibrary();
@@ -707,11 +725,12 @@ document.addEventListener("click",async e=>{
 });
 document.addEventListener("change",e=>{if(e.target.id!=="diff")return;ps().difficulty=e.target.value;saveStats();const n=$("#diffNote");if(n)n.textContent=DIFF[diffKey()].note});
 $("#player").addEventListener("change",e=>{
+  if(e.target.value==="__rename"){renderPlayers();return renameDialog()}
   if(e.target.value==="__add"){renderPlayers();modal(`<h3>Add a player</h3><label for="pn">Name</label><input id="pn" maxlength="24" autocomplete="off"><div class="row" style="margin-top:12px"><button class="pri" data-act="addP">Add</button><button data-act="close">Cancel</button></div>`);return}
   saveStats();cur=e.target.value;ls.set("ks-cur",cur);if(view==="play"&&!(G&&G.testing))return renderLibrary();if(view==="library")renderLibrary();
 });
 document.addEventListener("click",e=>{if(e.target.closest("[data-act=addP]")){const n=$("#pn").value.trim();if(n&&!players.includes(n)){players.push(n);ls.set("ks-players",players)}if(n){cur=n;ls.set("ks-cur",cur)}closeModal();renderPlayers();if(view==="library")renderLibrary()}});
-document.addEventListener("keydown",e=>{if(e.key==="Escape"&&$("#modal").innerHTML)closeModal();if(e.key==="Enter"&&e.target.id==="pn")$("[data-act=addP]").click();if(e.key==="Enter"&&e.target.id==="ek")$("[data-act=signInGo]").click()});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&$("#modal").innerHTML)closeModal();if(e.key==="Enter"&&e.target.id==="pn")$("[data-act=addP]").click();if(e.key==="Enter"&&e.target.id==="rn")$("[data-act=renameGo]").click();if(e.key==="Enter"&&e.target.id==="ek")$("[data-act=signInGo]").click()});
 
 renderPlayers();renderLibrary();loadAdventures().then(()=>{if(view==="library")renderLibrary()});
 }

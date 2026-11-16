@@ -12,6 +12,8 @@ A typing game for kids: branching history adventures where you type your choices
 | `config.php` | Your editor password, backup count and whether players see their typing speed. You create it; git ignores it, so your password never gets committed. |
 | `adventures/` | One `.json` file per adventure. The game loads every valid file in here; there is no manifest. |
 | `.claude/skills/write-adventure/` | A Claude Code skill for researching and writing new adventures, with a validator. |
+| `manifest.webmanifest`, `sw.js`, `icons/` | Make it installable as a home-screen app that works offline. |
+| `.htaccess` | Sets the right file type for the app manifest, keeps the page and service worker fresh, and hides `.git` (Apache only). |
 | `adventures/.htaccess` | Stops people downloading the files directly, so drafts stay hidden (Apache only). |
 
 ## Setup
@@ -51,9 +53,13 @@ Adventures you create or edit on the server change files in `adventures/`. To ke
 
 ```
 location ^~ /typing/adventures/ { deny all; }
+location ~ /\.git { deny all; }
+location ~ /typing/(index\.html|sw\.js|manifest\.webmanifest)$ { add_header Cache-Control "no-cache"; }
 ```
 
-(Adjust `/typing/` to wherever you put the game.)
+Also make sure your `mime.types` maps `webmanifest` to `application/manifest+json`. Adjust `/typing/` to wherever you put the game.
+
+The home-screen app and offline play need HTTPS, which most hosts provide free through Let's Encrypt.
 
 ## Adventure files
 
@@ -147,6 +153,27 @@ Each player picks a difficulty in their player panel. It scales every timed scen
 | Expert | 0.5× (half as long) |
 
 Write adventure timers for Normal. The validator checks them against a beginner's typing speed. Each finished run records the difficulty it was played on.
+
+## iPad and touchscreens
+
+**With a keyboard** (Bluetooth or a keyboard case), the iPad works like a computer. This is the best way to practise.
+
+**Without a keyboard,** tap **Tap to type** or anywhere on the scene to bring up the iPad's keyboard. While it's open, the game hides the picture and its drawn keyboard, and keeps the timer and choices just above the iPad keyboard. This works in portrait and landscape.
+
+To keep practice honest with the on-screen keyboard:
+- **Letter by letter only.** Autocorrect and auto-capitals are switched off. Word suggestions can't be hidden on iPad, so any whole word inserted at once is rejected with a message.
+- **Separate records.** Each run records whether it was typed on a keyboard or the screen. Speed badges, overall typing speed and the trouble-key list only count keyboard typing, because screen typos aren't finger mistakes.
+- **Relaxed tip.** In timed scenes, players on Normal or harder see a tip suggesting Relaxed difficulty while the screen keyboard is open.
+
+The "Tap to type" button and keyboard tip disappear once the game sees a real key press on that device.
+
+### Home-screen app
+
+In Safari, tap **Share**, then **Add to Home Screen**. The game then opens full screen with its own icon. The player panel on iPad shows these steps until you hide them.
+
+- **Offline:** published adventures you've loaded at least once stay playable offline. Updates arrive next time there's a connection. Editing always needs a connection.
+- **Separate player data:** on iPad, the home-screen app keeps its own player data, apart from Safari's. Move players across with **Download data** in Safari, then **Import data** in the app.
+- **App updates:** when you change `sw.js`, bump `VERSION` at the top so installed copies refresh their cached files. Changes to `index.html` and adventures arrive without it.
 
 ## Badges
 

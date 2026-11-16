@@ -2,8 +2,16 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Keystone Quest</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#b8352a">
+<link rel="icon" type="image/png" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Keystone Quest">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Atkinson+Hyperlegible+Mono:wght@400;600&display=swap" rel="stylesheet">
@@ -16,6 +24,7 @@
 :root{color-scheme:light dark;--bg:light-dark(#ebe9e4,#151614);--panel:light-dark(#fbfaf7,#20221f);--ink:light-dark(#1c1d1b,#ebeae4);--mute:light-dark(#5d605a,#a2a59d);--line:light-dark(#d3d0c9,#363934);--acc:#b8352a;--good:light-dark(#2d7a4c,#5fbf86);--mix:light-dark(#9a6a0c,#e0b04a);--bad:light-dark(#b0322a,#ef7a6e);--f1:#9a6fc0;--f2:#3f84c4;--f3:#3f9a63;--f4:#d1912c}
 :root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
 *{box-sizing:border-box;min-width:0}
+html{touch-action:manipulation;-webkit-text-size-adjust:100%;-webkit-tap-highlight-color:transparent}
 body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.55 "Atkinson Hyperlegible",system-ui,sans-serif;overflow-x:clip}
 h1,h2,h3{font-family:Cinzel,Georgia,serif;font-weight:800;line-height:1.08;margin:0;text-wrap:balance}
 button,input,select,textarea{font:inherit;color:inherit}
@@ -26,7 +35,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
 input,select,textarea{width:100%;font-size:16px;border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:9px 11px}
 textarea{resize:vertical;min-height:90px}
 label{display:block;font-size:14px;color:var(--mute);margin:12px 0 4px}
-.top{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:12px max(4vw,16px);border-bottom:1px solid var(--line);background:var(--panel)}
+.top{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:max(12px,env(safe-area-inset-top)) max(4vw,16px,env(safe-area-inset-right)) 12px max(4vw,16px,env(safe-area-inset-left));border-bottom:1px solid var(--line);background:var(--panel)}
 .brand{font-family:Cinzel,serif;font-weight:800;font-size:22px;margin-right:auto;display:flex;align-items:center;gap:10px}
 .brand svg{width:28px;height:28px}
 .top select{width:auto;min-height:44px}
@@ -82,7 +91,11 @@ details li{font-size:14px;margin:6px 0;color:var(--mute)}
 .note strong{font-family:Cinzel,serif;display:block;font-size:14px;margin-bottom:2px}
 .prompt{font-size:14px;color:var(--mute);margin:20px 0 8px}
 .choices{display:flex;flex-direction:column;gap:10px}
-.ch{font-family:"Atkinson Hyperlegible Mono",monospace;font-size:clamp(19px,2.6vw,25px);background:var(--panel);border:2px solid var(--line);border-radius:12px;padding:14px 18px;transition:opacity .15s,border-color .15s;white-space:pre-wrap;word-break:break-word}
+#ti{position:fixed;left:0;bottom:0;width:1px;height:1px;opacity:0;font-size:16px;border:0;padding:0;pointer-events:none}
+.tapkb{width:100%;margin-top:12px;font-weight:700;border-style:dashed;min-height:52px}
+.pmsg{color:var(--bad);font-weight:700;margin-left:8px}
+.kbtip{display:none}
+.ch{-webkit-user-select:none;user-select:none;font-family:"Atkinson Hyperlegible Mono",monospace;font-size:clamp(19px,2.6vw,25px);background:var(--panel);border:2px solid var(--line);border-radius:12px;padding:14px 18px;transition:opacity .15s,border-color .15s;white-space:pre-wrap;word-break:break-word}
 .ch .t{color:var(--acc);font-weight:600}
 .ch .n{border-bottom:3px solid var(--acc)}
 .ch.on{border-color:var(--acc)}
@@ -126,12 +139,20 @@ details li{font-size:14px;margin:6px 0;color:var(--mute)}
 .modal textarea{min-height:240px;font-family:"Atkinson Hyperlegible Mono",monospace;font-size:13px}
 @media(max-width:900px){.lib,.ed{grid-template-columns:minmax(0,1fr)}}
 @media(max-width:600px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.grid3,.chrow,.chrow .adv{grid-template-columns:minmax(0,1fr)}.k{width:calc((100vw - 90px)/11)}}
+body.softkb .play{position:fixed;left:0;right:0;top:var(--vvt,0);height:var(--vvh,100vh);max-width:none;margin:0;padding:8px max(12px,env(safe-area-inset-left)) 8px max(12px,env(safe-area-inset-right));display:flex;flex-direction:column;background:var(--bg);z-index:8}
+body.softkb .pscroll{flex:1;min-height:0;overflow:auto;-webkit-overflow-scrolling:touch}
+body.softkb .pdock{flex:none;border-top:1px solid var(--line);padding-top:6px}
+body.softkb .scene-art,body.softkb .kb,body.softkb .legend,body.softkb .warn,body.softkb .tapkb{display:none}
+body.softkb .ptop{margin:2px 0}body.softkb .ptop h2{font-size:19px}body.softkb .ptop .ghost{min-height:36px;padding:6px 10px}
+body.softkb .story{font-size:17px;margin:6px 0}body.softkb .prompt{margin:6px 0 4px}
+body.softkb .ch{padding:8px 12px;font-size:18px}body.softkb .choices{gap:6px}
+body.softkb .kbtip{display:inline}
 @media(prefers-reduced-motion:reduce){.shake{animation:none}.k.hot{transform:none}}
 </style>
 </head>
 <body>
 <header class="top">
-  <div class="brand"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M4 28 L4 14 Q16 0 28 14 L28 28 L21 28 L21 17 Q16 11 11 17 L11 28Z" fill="var(--acc)"/><path d="M13 4 h6 l-1 7 h-4z" fill="currentColor"/></svg>Keystone Quest</div>
+  <div class="brand"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M4 28 L4 14 Q16 0 28 14 L28 28 L21 28 L21 17 Q16 11 11 17 L11 28Z" fill="var(--acc)"/><path d="M12.6 5.6 h6.8 l-1.4 8.6 h-4z" fill="currentColor"/></svg>Keystone Quest</div>
   <select id="player" aria-label="Player"></select>
   <button class="ghost" data-act="sound" id="soundBtn">Sound on</button>
   <button class="ghost" data-act="library">Adventures</button>
@@ -139,6 +160,7 @@ details li{font-size:14px;margin:6px 0;color:var(--mute)}
 </header>
 <main id="app"></main>
 <div id="modal"></div>
+<input id="ti" type="text" value="##" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" inputmode="text" enterkeyhint="done" aria-label="Type your choice here">
 <div id="toast" role="status" aria-live="polite"></div>
 <script>
 {
@@ -146,7 +168,7 @@ const ARTS={none:"Plain",volcano:"Volcano",desert:"Desert valley",castle:"Castle
 
 /* ---------- helpers ---------- */
 const $=s=>document.querySelector(s);
-const app=$("#app");
+const app=$("#app"),ti=$("#ti");
 const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const ls={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 const clone=o=>JSON.parse(JSON.stringify(o));
@@ -196,7 +218,8 @@ const findAdv=id=>ADVS.find(a=>a.id===id);
 const validId=id=>/^[a-z0-9][a-z0-9-]{0,63}$/.test(id);
 async function api(action,body){
   const h={"Content-Type":"application/json"};if(editKey)h["X-Edit-Key"]=editKey;
-  const r=await fetch("api.php?action="+action,{method:body?"POST":"GET",headers:h,body:body?JSON.stringify(body):undefined,cache:"no-store"});
+  let r;try{r=await fetch("api.php?action="+action,{method:body?"POST":"GET",headers:h,body:body?JSON.stringify(body):undefined,cache:"no-store"})}
+  catch(e){throw new Error(navigator.onLine===false?"You're offline. Connect to the internet and try again.":"Couldn't reach the server. Check your connection, or that api.php is uploaded and PHP is running.")}
   let d={};try{d=await r.json()}catch(e){}
   if(!r.ok){const er=new Error(d.error||"The server answered with an error ("+r.status+").");er.status=r.status;er.data=d;throw er}
   return d;
@@ -204,7 +227,7 @@ async function api(action,body){
 async function loadAdventures(){
   try{const d=await api("list");ADVS=d.adventures||[];isEditor=!!d.editor;editingOn=d.editing!==false;SHOW_SPEED=!(d.settings&&d.settings.showSpeed===false);
     if(editKey&&!isEditor){editKey="";ls.set("ksq-key","")}loadState="ok"}
-  catch(e){loadState="error";loadErr=e.status?e.message:"Couldn't reach the server. Check that api.php is uploaded and PHP is running."}
+  catch(e){loadState="error";loadErr=e.message}
   renderPlayers();
 }
 function signIn(then){
@@ -218,7 +241,9 @@ function renderPlayers(){$("#player").innerHTML=players.map(p=>`<option ${p===cu
 
 /* ---------- sound ---------- */
 let ac=null;
-function beep(ok){if(!sound)return;try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();const o=ac.createOscillator(),g=ac.createGain();o.type=ok?"triangle":"sawtooth";o.frequency.value=ok?660:140;g.gain.setValueAtTime(ok?.05:.07,ac.currentTime);g.gain.exponentialRampToValueAtTime(.0001,ac.currentTime+(ok?.06:.18));o.connect(g).connect(ac.destination);o.start();o.stop(ac.currentTime+.2)}catch(e){}}
+function unlockAudio(){try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();if(ac.state==="suspended")ac.resume();const b=ac.createBuffer(1,1,22050),s=ac.createBufferSource();s.buffer=b;s.connect(ac.destination);s.start(0)}catch(e){}}
+document.addEventListener("pointerdown",unlockAudio,{once:true});document.addEventListener("touchend",unlockAudio,{once:true});
+function beep(ok){if(!sound)return;try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();if(ac.state==="suspended")ac.resume();const o=ac.createOscillator(),g=ac.createGain();o.type=ok?"triangle":"sawtooth";o.frequency.value=ok?660:140;g.gain.setValueAtTime(ok?.05:.07,ac.currentTime);g.gain.exponentialRampToValueAtTime(.0001,ac.currentTime+(ok?.06:.18));o.connect(g).connect(ac.destination);o.start();o.stop(ac.currentTime+.2)}catch(e){}}
 
 /* ---------- badges ----------
    Each badge is worked out from the player's saved data, so past play counts.
@@ -247,9 +272,9 @@ const BADGES=[
  {id:"keys-1k",cat:"keys",name:"Apprentice Scribe",desc:"Type 1,000 correct keys.",ok:x=>x.keys>=1000},
  {id:"keys-5k",cat:"keys",name:"Journeyman Scribe",desc:"Type 5,000 correct keys.",ok:x=>x.keys>=5000},
  {id:"keys-20k",cat:"keys",name:"Master Scribe",desc:"Type 20,000 correct keys.",ok:x=>x.keys>=20000},
- {id:"wpm-15",cat:"speed",speed:true,name:"Quick Fingers",desc:"Finish an adventure at 15 words per minute or faster.",ok:x=>x.bestWpm>=15},
- {id:"wpm-25",cat:"speed",speed:true,name:"Swift",desc:"Finish an adventure at 25 words per minute or faster.",ok:x=>x.bestWpm>=25},
- {id:"wpm-40",cat:"speed",speed:true,name:"Lightning",desc:"Finish an adventure at 40 words per minute or faster.",ok:x=>x.bestWpm>=40},
+ {id:"wpm-15",cat:"speed",speed:true,name:"Quick Fingers",desc:"Finish an adventure at 15 words per minute or faster on a keyboard.",ok:x=>x.bestWpm>=15},
+ {id:"wpm-25",cat:"speed",speed:true,name:"Swift",desc:"Finish an adventure at 25 words per minute or faster on a keyboard.",ok:x=>x.bestWpm>=25},
+ {id:"wpm-40",cat:"speed",speed:true,name:"Lightning",desc:"Finish an adventure at 40 words per minute or faster on a keyboard.",ok:x=>x.bestWpm>=40},
  {id:"clock-1",cat:"time",name:"Beat the Clock",desc:"Get through a timed scene before time runs out.",ok:x=>x.beatClock>=1},
  {id:"clock-10",cat:"time",name:"Cool Under Pressure",desc:"Beat the clock in 10 timed scenes.",ok:x=>x.beatClock>=10},
  {id:"daredevil",cat:"time",name:"Daredevil",desc:"Reach a best ending on Challenging or Expert.",ok:x=>x.hardGood},
@@ -266,7 +291,7 @@ function badgeFacts(){
     fullAdv:pub.filter(a=>{const e=endingIds(a);return e.length&&e.every(id=>(P.endings[a.id]||[]).includes(id))}).length,
     goodAdv:pub.filter(goodIn).length,advCount:pub.length,
     notes:Object.values(P.facts).reduce((s,l)=>s+l.length,0),
-    bestAcc:Math.max(0,...runs.map(r=>r.acc||0)),bestWpm:Math.max(0,...runs.map(r=>r.wpm||0)),
+    bestAcc:Math.max(0,...runs.map(r=>r.acc||0)),bestWpm:Math.max(0,...runs.filter(r=>r.input!=="touch").map(r=>r.wpm||0)),
     homeRow:"asdfjkl;".split("").every(k=>kv(k)[0]+kv(k)[1]>=20&&rate(k)>=.95),
     allLetters:"abcdefghijklmnopqrstuvwxyz".split("").every(k=>kv(k)[0]>=10),
     keys:Object.values(P.keys).reduce((s,v)=>s+v[0],0),
@@ -296,11 +321,22 @@ function badgeGallery(){
   modal(`<div class="row"><h3 style="margin-right:auto">${esc(cur)}'s badges</h3><span class="small">${n} of ${list.length} earned</span></div>${groups}<div class="row" style="margin-top:16px"><button class="pri" data-act="close">Close</button></div>`);
 }
 
+/* ---------- home-screen app ---------- */
+const isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
+const standalone=navigator.standalone===true||matchMedia("(display-mode: standalone)").matches;
+function installHint(){
+  if(!isIOS||standalone||ls.get("ksq-hint-off",false))return "";
+  return `<div class="box"><h3>Add to Home Screen</h3><p class="small" style="margin:0">Play full screen like an app: tap the Share button in Safari, then <b>Add to Home Screen</b>.</p><p class="small">The home-screen app keeps its own player data. To move ${players.length===1?"this player":"these players"} over, use <b>Download data</b> here, then <b>Import data</b> in the app.</p><button class="ghost" data-act="hintOff">Hide this</button></div>`;
+}
+if("serviceWorker" in navigator&&(location.protocol==="https:"||location.hostname==="localhost"||location.hostname==="127.0.0.1"))
+  window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));
+
 /* ---------- library ---------- */
 let view="library";
 function setAccent(c){document.documentElement.style.setProperty("--acc",c||"#b8352a")}
 function endingIds(a){return Object.keys(a.scenes).filter(k=>a.scenes[k].ending)}
 function renderLibrary(){
+  if(document.activeElement===ti)ti.blur();
   view="library";setAccent("#b8352a");
   checkBadges();
   const P=counts();
@@ -308,7 +344,9 @@ function renderLibrary(){
   const keys=Object.entries(P.keys).filter(([k,v])=>v[0]+v[1]>=6).map(([k,v])=>[k,v[0]/(v[0]+v[1])]).sort((a,b)=>a[1]-b[1]).slice(0,6).filter(x=>x[1]<.97);
   const totalH=Object.values(P.keys).reduce((s,v)=>s+v[0],0),totalM=Object.values(P.keys).reduce((s,v)=>s+v[1],0);
   const cards=allAdv().map(a=>{const found=(P.endings[a.id]||[]).length,tot=endingIds(a).length,sv=P.saves[a.id],runs=P.scores[a.id]||[];
-    const best=runs.length?`Best run: ${Math.max(...runs.map(r=>r.acc))}% accuracy${SHOW_SPEED?` · ${Math.max(...runs.map(r=>r.wpm||0))} wpm`:""} · ${runs.length} ${runs.length===1?"run":"runs"}`:"";
+    const kRuns=runs.filter(r=>r.input!=="touch"),tRuns=runs.filter(r=>r.input==="touch");
+    const spd=!SHOW_SPEED?"":kRuns.length?` · ${Math.max(...kRuns.map(r=>r.wpm||0))} wpm`:tRuns.length?` · ${Math.max(...tRuns.map(r=>r.wpm||0))} wpm on screen`:"";
+    const best=runs.length?`Best run: ${Math.max(...runs.map(r=>r.acc))}% accuracy${spd} · ${runs.length} ${runs.length===1?"run":"runs"}`:"";
     const canResume=sv&&a.scenes[sv.scene];
     return `<article class="card" style="--acc:${esc(a.accent||"#b8352a")}"><div class="art">${art(a.art,a.accent)}</div><div class="body"><span class="era">${esc(a.era)}</span><h3>${esc(a.title)}</h3><p>${esc(a.blurb)}</p><span class="small">Endings found: ${found} of ${tot}</span>${best?`<span class="small">${best}</span>`:""}${canResume?`<span class="small">In progress, saved ${new Date(sv.t).toLocaleDateString()}</span>`:""}<div class="row">${canResume?`<button class="pri" data-act="resume" data-id="${esc(a.id)}">Continue</button><button data-act="play" data-id="${esc(a.id)}">Start over</button>`:`<button class="pri" data-act="play" data-id="${esc(a.id)}">Play</button>`}${isEditor?`<button data-act="edit" data-id="${esc(a.id)}">Edit</button><button class="ghost" data-act="copy" data-id="${esc(a.id)}">Duplicate</button>`:""}</div>${a.published?"":`<span class="draft">Draft · only editors can see this</span>`}</div></article>`}).join("");
   const status=loadState==="loading"?`<p class="small">Loading adventures…</p>`:loadState==="error"?`<div class="warn">${esc(loadErr)} <button data-act="reload" style="margin-left:8px">Try again</button></div>`:!ADVS.length?`<p class="small">No adventures are published yet.</p>`:"";
@@ -318,6 +356,7 @@ function renderLibrary(){
   <label for="diff">Difficulty</label><select id="diff">${Object.entries(DIFF).map(([k,v])=>`<option value="${k}" ${k===diffKey()?"selected":""}>${v.label}</option>`).join("")}</select><div class="small" id="diffNote" style="margin-top:4px">${esc(DIFF[diffKey()].note)}</div>${keys.length?`<div class="small" style="margin-top:12px">Keys to practise</div><div class="tk">${keys.map(([k,v])=>`<span>${k===" "?"space":esc(k)}<b>${Math.round(v*100)}%</b></span>`).join("")}</div>`:""}
   <p class="small" style="margin:14px 0 0">Profiles, saved progress and scores for all ${players.length} ${players.length===1?"player":"players"} live in this browser. Download a backup to keep them safe or move them to another computer.</p><div class="row" style="margin-top:10px"><button data-act="dataOut">Download data</button><button data-act="dataIn">Import data</button></div></div>
   <div class="box"><h3>Badges</h3><div class="small">${earned.length} of ${shownBadges().length} earned</div>${earned.length?`<div class="mini">${earned.slice(0,8).map(b=>`<span title="${esc(b.name)}">${medal(b,true,40)}</span>`).join("")}</div>`:`<p class="small">Finish an adventure to earn your first one.</p>`}<button data-act="badges" style="margin-top:10px">See all badges</button></div>
+  ${installHint()}
   <div class="box"><h3>Field notes</h3><div class="small">Facts you have uncovered while playing.</div>${codex||`<p class="small">None yet.</p>`}</div>
   ${isEditor?`<div class="box"><h3>Editor mode</h3><div class="small">${ADVS.filter(a=>a.published).length} published, ${ADVS.filter(a=>!a.published).length} ${ADVS.filter(a=>!a.published).length===1?"draft":"drafts"}. Players only see published adventures.</div><div class="row" style="margin-top:10px"><button data-act="new">New adventure</button><button data-act="import">Import</button></div></div>`:""}</aside></div></div>`;
 }
@@ -326,8 +365,8 @@ function renderLibrary(){
 let G=null;
 const FING={q:1,a:1,z:1,w:2,s:2,x:2,e:3,d:3,c:3,r:4,f:4,v:4,t:4,g:4,b:4,y:4,h:4,n:4,u:4,j:4,m:4,i:3,k:3,",":3,o:2,l:2,".":2,p:1,";":1,"/":1,"'":1," ":0};
 const ROWS=[["q","w","e","r","t","y","u","i","o","p"],["a","s","d","f","g","h","j","k","l",";","'"],["z","x","c","v","b","n","m",",",".","/"]];
-function play(adv,sceneId,testing,resume){view="play";setAccent(adv.accent);G={adv,flags:new Set,buf:"",hits:0,misses:0,ms:0,t0:0,notes:0,testing:!!testing,token:0,locked:false};
-  if(resume&&adv.scenes[resume.scene]){G.flags=new Set(resume.flags||[]);G.hits=+resume.hits||0;G.misses=+resume.misses||0;G.ms=+resume.ms||0;G.notes=+resume.notes||0;return go(resume.scene,true)}
+function play(adv,sceneId,testing,resume){view="play";setAccent(adv.accent);G={adv,flags:new Set,buf:"",hits:0,misses:0,ms:0,t0:0,notes:0,testing:!!testing,token:0,locked:false,hwKeys:0,touchKeys:0};
+  if(resume&&adv.scenes[resume.scene]){G.flags=new Set(resume.flags||[]);G.hits=+resume.hits||0;G.misses=+resume.misses||0;G.ms=+resume.ms||0;G.notes=+resume.notes||0;G.hwKeys=+resume.hwKeys||0;G.touchKeys=+resume.touchKeys||0;return go(resume.scene,true)}
   go(sceneId||adv.start)}
 function sc(){return G.adv.scenes[G.scene]}
 function go(id,resumed){
@@ -338,9 +377,9 @@ function go(id,resumed){
     const day=new Date().toLocaleDateString("en-CA");if(!P.days.includes(day)){P.days.push(day);if(P.days.length>400)P.days.shift()}
     if(s.fact){P.facts[aid]=P.facts[aid]||[];if(!P.facts[aid].includes(id))P.facts[aid].push(id)}
     if(s.ending){P.endings[aid]=P.endings[aid]||[];if(!P.endings[aid].includes(id))P.endings[aid].push(id);
-      if(!resumed){P.scores[aid]=P.scores[aid]||[];P.scores[aid].push({t:Date.now(),ending:s.ending,scene:id,acc:acc(),wpm:wpm(),diff:diffKey()});if(P.scores[aid].length>50)P.scores[aid].shift()}
+      if(!resumed){P.scores[aid]=P.scores[aid]||[];P.scores[aid].push({t:Date.now(),ending:s.ending,scene:id,acc:acc(),wpm:wpm(),diff:diffKey(),input:G.touchKeys>G.hwKeys?"touch":"keyboard"});if(P.scores[aid].length>50)P.scores[aid].shift()}
       delete P.saves[aid]}
-    else P.saves[aid]={scene:id,flags:[...G.flags],hits:G.hits,misses:G.misses,ms:Math.round(G.ms),wpm:wpm(),acc:acc(),notes:G.notes,t:Date.now()};
+    else P.saves[aid]={scene:id,flags:[...G.flags],hits:G.hits,misses:G.misses,ms:Math.round(G.ms),wpm:wpm(),acc:acc(),notes:G.notes,hwKeys:G.hwKeys,touchKeys:G.touchKeys,t:Date.now()};
     saveStats();
     const got=checkBadges();G.newBadges=(G.newBadges||[]).concat(got);toast(got)}
   renderPlay();
@@ -366,14 +405,28 @@ function renderPlay(){
     <div class="stats"><div><b>${acc()}%</b><span>accuracy</span></div>${SHOW_SPEED?`<div><b>${wpm()}</b><span>words per minute</span></div>`:""}<div><b>${G.notes}</b><span>field notes this run</span></div><div><b>${G.testing?"–":fd+"/"+tot}</b><span>endings found</span></div></div>
     ${(G.newBadges||[]).filter(b=>SHOW_SPEED||!b.speed).length?`<div class="prompt">Badges earned this run</div><div class="medals">${G.newBadges.filter(b=>SHOW_SPEED||!b.speed).map(b=>`<div class="medal">${medal(b,true)}<div><strong>${esc(b.name)}</strong><span>${esc(b.desc)}</span></div></div>`).join("")}</div>`:""}`}
   else body=`<div class="story">${para(s.text)}${s.fact?`<div class="note"><strong>Field note</strong>${esc(s.fact)}</div>`:""}</div>`;
-  app.innerHTML=`<section class="play"><div class="scene-art">${art(a.art,a.accent)}</div>
+  const tip=timerSecs(s)&&["normal","challenge","expert"].includes(diffKey())?`<span class="kbtip"> · Typing on the screen? Relaxed difficulty in the player panel gives more time.</span>`:"";
+  app.innerHTML=`<section class="play"><div class="pscroll"><div class="scene-art">${art(a.art,a.accent)}</div>
   <div class="ptop"><h2>${esc(a.title)}</h2><div class="meter"><span>Accuracy <b id="mAcc">${acc()}%</b></span>${SHOW_SPEED?`<span>Speed <b id="mW">${wpm()}</b> wpm</span>`:""}<span>${esc(DIFF[diffKey()].label)}</span></div><button class="ghost" data-act="${G.testing?"backEdit":"library"}">${G.testing?"Back to editor":"Save and leave"}</button></div>
-  ${timerSecs(s)?`<div class="timer"><i id="tbar"></i></div>`:s&&!s.ending&&+s.timer>0&&s.timeout?`<p class="small">No timers: take your time.</p>`:""}
-  ${body}<div class="prompt">${s&&s.ending?"Type to continue":"Type a choice"}</div><div class="choices" id="choices"></div>
+  ${body}</div>
+  <div class="pdock">${timerSecs(s)?`<div class="timer"><i id="tbar"></i></div>`:s&&!s.ending&&+s.timer>0&&s.timeout?`<p class="small">No timers: take your time.</p>`:""}
+  <div class="prompt">${s&&s.ending?"Type to continue":"Type a choice"}${tip}<span id="pmsg" class="pmsg" role="status"></span></div><div class="choices" id="choices"></div>
+  ${isTouch()&&!hasHW?`<button class="tapkb" id="tapkb" data-act="showkb">Tap to type</button>`:""}</div>
   <div class="kb" id="kb"></div><div class="legend"><span><i style="background:var(--f1)"></i>little finger</span><span><i style="background:var(--f2)"></i>ring</span><span><i style="background:var(--f3)"></i>middle</span><span><i style="background:var(--f4)"></i>pointer</span></div>
-  ${coarse?`<div class="warn">This game needs a physical keyboard. Open it on a computer, or connect a keyboard to this tablet.</div>`:""}</section>`;
+  ${coarse&&!hasHW?`<div class="warn">Tip: a Bluetooth or keyboard case makes the best typing practice. The finger colours above only work on a real keyboard.</div>`:""}</section>`;
   draw();
 }
+/* When the iPad keyboard is up, the play screen docks into the visible area: story scrolls,
+   timer and choices stay pinned just above the keyboard (portrait or landscape). */
+function vvUpdate(){
+  const vv=window.visualViewport;if(!vv)return;
+  const open=document.activeElement===ti&&window.innerHeight-vv.height>150;
+  document.documentElement.style.setProperty("--vvh",vv.height+"px");
+  document.documentElement.style.setProperty("--vvt",vv.offsetTop+"px");
+  if(open!==kbdOpen){kbdOpen=open;document.body.classList.toggle("softkb",open);const c=$("#choices");if(open&&c)c.scrollIntoView({block:"nearest"})}
+}
+if(window.visualViewport){visualViewport.addEventListener("resize",vvUpdate);visualViewport.addEventListener("scroll",vvUpdate)}
+ti.addEventListener("focus",()=>setTimeout(vvUpdate,300));ti.addEventListener("blur",()=>setTimeout(vvUpdate,50));
 function para(t){return String(t||"").split(/\n\s*\n/).map(p=>`<p>${esc(p)}</p>`).join("")}
 function draw(){
   const v=visible(),L=live(),b=G.buf;
@@ -385,11 +438,11 @@ function draw(){
   $("#kb").innerHTML=ROWS.map((r,i)=>`<div class="kr" style="margin-left:${i*18}px">${r.map(key).join("")}</div>`).join("")+`<div class="kr"><div class="k space ${next.has(" ")?"hot":""}" style="--fc:var(--ink)">space</div></div>`;
   const ma=$("#mAcc"),mw=$("#mW");if(ma)ma.textContent=acc()+"%";if(mw)mw.textContent=wpm();
 }
-function mark(k,ok){const P=ps().keys;P[k]=P[k]||[0,0];P[k][ok?0:1]++}
+function mark(k,ok){if(kbdOpen)return;/* glass typos aren't finger mistakes */const P=ps().keys;P[k]=P[k]||[0,0];P[k][ok?0:1]++}
 function commit(c){
   G.locked=true;
   if(G.t0){const dt=performance.now()-G.t0;G.ms+=dt;G.t0=0;
-    if(!G.testing&&dt<120000){const t=typing();t.chars+=G.hits-G.h0;t.ms+=Math.round(dt)}}
+    if(!G.testing&&!kbdOpen&&dt<120000){const t=typing();t.chars+=G.hits-G.h0;t.ms+=Math.round(dt)}}
   if(!G.testing&&!c.sys&&timerSecs(sc())){const P=counts();P.counts.beatClock=(P.counts.beatClock||0)+1}
   list(c.gives).forEach(f=>G.flags.add(f));saveStats();
   const el=[...document.querySelectorAll(".ch")].find(e=>e.textContent.trim()===c.text.trim());if(el)el.classList.add("done");
@@ -400,19 +453,49 @@ function commit(c){
     if(c.sys==="__editor")return renderEditor();
     go(c.next)},320);
 }
-document.addEventListener("keydown",e=>{
+/* ---------- typing input ----------
+   Hardware keys arrive as keydown. The iPad's on-screen keyboard needs a focused text box (#ti),
+   which lives outside #app so re-rendering a scene never closes the keyboard. Its letters arrive as
+   keydown when the browser reports them, otherwise through the input event. Whole words inserted at
+   once (predictions, autocorrect) are rejected so only letter-by-letter typing counts. */
+const SENT="##";
+let kbdOpen=false,hasHW=ls.get("ksq-hw",false);
+const isTouch=()=>navigator.maxTouchPoints>0||matchMedia("(pointer:coarse)").matches;
+function tiReset(){ti.value=SENT;try{ti.setSelectionRange(SENT.length,SENT.length)}catch(e){}}
+function focusTyping(){if(view==="play"){tiReset();ti.focus({preventScroll:true})}}
+function typeChar(raw){
   if(view!=="play"||!G||G.locked)return;
-  if(e.target.closest&&e.target.closest("input,textarea,select"))return;
-  if(e.ctrlKey||e.metaKey||e.altKey)return;
-  if(e.key==="Backspace"){e.preventDefault();G.buf=G.buf.slice(0,-1);draw();return}
-  if(e.key.length!==1)return;
-  e.preventDefault();
-  const ch=e.key.toLowerCase(),L=live();if(!L.length)return;
+  const ch=raw.toLowerCase(),L=live();if(!L.length)return;
   if(!G.t0)G.t0=performance.now();
+  if(kbdOpen)G.touchKeys++;else G.hwKeys++;
   const nb=G.buf+ch,ok=L.filter(c=>c.text.toLowerCase().startsWith(nb));
   if(ok.length){G.buf=nb;G.hits++;mark(ch,1);beep(true);const done=ok.find(c=>c.text.toLowerCase()===nb);draw();if(done)commit(done)}
-  else{G.misses++;new Set(L.map(c=>c.text.toLowerCase().charAt(G.buf.length))).forEach(k=>mark(k,0));beep(false);const box=$("#choices");box.classList.remove("shake");void box.offsetWidth;box.classList.add("shake");draw()}
+  else{G.misses++;new Set(L.map(c=>c.text.toLowerCase().charAt(G.buf.length))).forEach(k=>mark(k,0));beep(false);shake()}
+}
+function backspace(){if(view!=="play"||!G||G.locked)return;G.buf=G.buf.slice(0,-1);draw()}
+function shake(msg){const box=$("#choices");if(!box)return;box.classList.remove("shake");void box.offsetWidth;box.classList.add("shake");draw();
+  if(msg){const n=$("#pmsg");if(n){n.textContent=msg;clearTimeout(shake.t);shake.t=setTimeout(()=>{n.textContent=""},2500)}}}
+document.addEventListener("keydown",e=>{
+  if(view!=="play"||!G)return;
+  if(e.target!==ti&&e.target.closest&&e.target.closest("input,textarea,select"))return;
+  if(e.ctrlKey||e.metaKey||e.altKey)return;
+  if(e.key==="Backspace"){e.preventDefault();backspace();return}
+  if(e.key.length!==1||e.isComposing)return; /* "Unidentified" and composing keys go through the input event */
+  e.preventDefault();
+  if(!kbdOpen&&!hasHW){hasHW=true;ls.set("ksq-hw",true);const w=$("#tapkb");if(w)w.remove()}
+  if(!G.locked)typeChar(e.key);
 });
+ti.addEventListener("input",()=>{
+  const v=ti.value;tiReset();
+  if(v.length<SENT.length)return backspace();
+  if(!v.startsWith(SENT))return;
+  const add=v.slice(SENT.length);
+  if(add.length===1)typeChar(add);
+  else if(add.length>1)shake("Type it letter by letter. Word suggestions don't count.");
+});
+ti.addEventListener("focus",tiReset);
+/* tapping anywhere on the play screen (except buttons) brings up the keyboard */
+app.addEventListener("click",e=>{if(view==="play"&&isTouch()&&!e.target.closest("button,a,select,input"))focusTyping()});
 
 /* ---------- editor ---------- */
 let E=null;
@@ -448,6 +531,7 @@ function issues(a){
 }
 function opts(ids,v,extra){return extra+ids.map(id=>`<option value="${esc(id)}" ${id===v?"selected":""}>${esc(id)}</option>`).join("")}
 function renderEditor(){
+  if(document.activeElement===ti)ti.blur();
   view="editor";const a=E.adv;setAccent(a.accent);
   if(!a.scenes[E.sel])E.sel=Object.keys(a.scenes)[0];
   const ids=Object.keys(a.scenes),s=a.scenes[E.sel],iss=issues(a);
@@ -570,6 +654,8 @@ document.addEventListener("click",async e=>{
     case "copy":{const a=clone(findAdv(id));a.title+=" (copy)";a.id=freeId(a.title);a.published=false;delete a.updated;return openEditor(a,true)}
     case "edit":return openEditor(findAdv(id));
     case "badges":return badgeGallery();
+    case "showkb":return focusTyping();
+    case "hintOff":ls.set("ksq-hint-off",true);return renderLibrary();
     case "reload":loadState="loading";renderLibrary();await loadAdventures();return renderLibrary();
     case "signIn":return signIn(()=>{if(view==="library")renderLibrary()});
     case "signInGo":{const k=$("#ek").value;if(!k)return;editKey=k;try{await api("auth");ls.set("ksq-key",k);closeModal();await loadAdventures();const f=window._afterSignIn;window._afterSignIn=null;if(view==="library")renderLibrary();if(f)f()}catch(x){editKey="";$("#ekMsg").textContent=x.status===401?"That password isn't right.":x.message}return}

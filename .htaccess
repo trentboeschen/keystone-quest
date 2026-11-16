@@ -1,0 +1,16 @@
+# Keystone Quest (Apache). Nginx users: see README.
+
+# Serve the home-screen app manifest with the right type.
+AddType application/manifest+json .webmanifest
+
+# The page and service worker must be re-checked on every visit so updates arrive.
+<IfModule mod_headers.c>
+  <FilesMatch "^(index\.html|sw\.js|manifest\.webmanifest)$">
+    Header set Cache-Control "no-cache"
+  </FilesMatch>
+</IfModule>
+
+# If you deployed with git clone, keep the .git folder private.
+<IfModule mod_alias.c>
+  RedirectMatch 404 /\.git
+</IfModule>

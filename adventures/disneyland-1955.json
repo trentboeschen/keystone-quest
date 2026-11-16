@@ -1,0 +1,343 @@
+{
+  "id": "disneyland-1955",
+  "title": "Countdown to Opening Day",
+  "era": "Anaheim, California · 1955",
+  "blurb": "Three weeks before Disneyland opens, help the construction boss make the calls that decide whether opening day is a triumph or a disaster.",
+  "art": "castle",
+  "accent": "#b54a1c",
+  "published": true,
+  "start": "start",
+  "sources": [
+    {
+      "title": "Disneyland's disastrous opening day (History.com)",
+      "url": "https://www.history.com/articles/disneylands-disastrous-opening-day-60-years-ago"
+    },
+    {
+      "title": "Disneyland's opening day: Black Sunday at 70 (Biography.com)",
+      "url": "https://www.biography.com/business-leaders/a65319657/disneyland-opening-black-sunday-70th-anniversar"
+    },
+    {
+      "title": "Dateline Disneyland (D23, official Disney fan club)",
+      "url": "https://d23.com/a-to-z/dateline-disneyland/"
+    },
+    {
+      "title": "Joe Fowler (D23 Disney Legends)",
+      "url": "https://d23.com/joe-fowler/"
+    },
+    {
+      "title": "The Construction of Disneyland (Designing Disney)",
+      "url": "https://www.designingdisney.com/content/construction-disneyland"
+    },
+    {
+      "title": "The Grand Opening of Disneyland (Designing Disney)",
+      "url": "https://www.designingdisney.com/content/grand-opening-disneyland"
+    },
+    {
+      "title": "BBC History Magazine on the opening (PressReader)",
+      "url": "https://www.pressreader.com/uk/bbc-history-magazine/20180614/281685435535448"
+    },
+    {
+      "title": "10 Things That Went Disastrously Wrong on Disneyland's Opening Day (Mental Floss)",
+      "url": "https://mentalfloss.com/article/541360/disneyland-disastrous-opening-day"
+    }
+  ],
+  "scenes": {
+    "start": {
+      "text": "Anaheim, California, late June 1955. In a dusty office trailer, Admiral Joe Fowler, the retired Navy officer running construction, spreads out the plans for Disneyland. Opening day is July 17, three weeks away. Then bad news arrives: the plumbers are on strike. Fowler turns to you, his fifteen-year-old runner.",
+      "fact": "Building started in July 1954 on about 160 acres of orange and walnut groves. Disneyland cost about $17 million and opened one year and one day later.",
+      "choices": [
+        {
+          "text": "fix the drinking fountains",
+          "next": "fountains"
+        },
+        {
+          "text": "build the restrooms first",
+          "next": "restrooms"
+        }
+      ]
+    },
+    "fountains": {
+      "text": "Fountains gurgle all over the park, but the restrooms still have no pipes. Fowler does the sums out loud: tens of thousands of guests, a blazing July sun, and almost nowhere for them to go. He looks at you over his glasses.",
+      "fact": "Orange County's plumbers and asphalt workers both went on strike in the final months, halting work on restrooms, fountains and paving.",
+      "choices": [
+        {
+          "text": "switch crews to the restrooms",
+          "next": "restrooms"
+        },
+        {
+          "text": "keep the fountains plan",
+          "next": "tickets",
+          "gives": "norooms"
+        }
+      ]
+    },
+    "restrooms": {
+      "text": "The plumbers still working go to the restrooms. That leaves most drinking fountains dry in the middle of a California July. Fowler taps his pencil on the plans. How will thirsty guests get water?",
+      "fact": "Walt Disney made the same choice. He reportedly said that guests could always buy a soda, but they could not use the street as a toilet.",
+      "choices": [
+        {
+          "text": "set out free water barrels",
+          "next": "tickets",
+          "gives": "water"
+        },
+        {
+          "text": "let them buy cold sodas",
+          "next": "tickets"
+        }
+      ]
+    },
+    "tickets": {
+      "text": "Thousands of invitations have gone out for a special preview on Sunday, July 17. The public comes on Monday. But a printer in town warns you that the invitations would be very easy to copy.",
+      "fact": "Disneyland expected about 15,000 people at the invitation-only preview. More than 28,000 came, many with counterfeit tickets.",
+      "choices": [
+        {
+          "text": "trust the invited guests",
+          "next": "weeds"
+        },
+        {
+          "text": "hire guards for every gate",
+          "next": "weeds",
+          "gives": "guards"
+        }
+      ]
+    },
+    "weeds": {
+      "text": "Along the Canal Boats ride, the new landscaping hasn't grown in. Weeds have shot up instead, and there is no time to replant. Pulling them all would take crews you badly need elsewhere.",
+      "fact": "This really happened. With no time to replant, workers put up signs giving the weeds fancy Latin names, so the banks looked like a botanical garden.",
+      "choices": [
+        {
+          "text": "pull up every last weed",
+          "next": "food",
+          "gives": "behind"
+        },
+        {
+          "text": "add fancy latin plant signs",
+          "next": "food"
+        }
+      ]
+    },
+    "food": {
+      "text": "The restaurant managers want their final orders. They have planned food for the invited guests only, just as the tickets say. Anything that isn't eaten will spoil in the heat.",
+      "fact": "On opening day, refreshment stands and three restaurants ran out of food.",
+      "choices": [
+        {
+          "text": "order for the guest list",
+          "next": "paving",
+          "needs": "guards"
+        },
+        {
+          "text": "stick to the invite list",
+          "next": "paving",
+          "lacks": "guards",
+          "gives": "chaos"
+        },
+        {
+          "text": "triple the food order",
+          "next": "paving",
+          "gives": "food"
+        }
+      ]
+    },
+    "paving": {
+      "text": "The asphalt strike is over at last, but Main Street is still bare dirt. The crew boss says they can pave this week, or wait until the final night so heavy trucks don't chew up the new surface.",
+      "fact": "Fresh asphalt on Main Street went soft in the heat, and women's high-heeled shoes sank into it.",
+      "choices": [
+        {
+          "text": "wait until the last night",
+          "next": "gas"
+        },
+        {
+          "text": "pave main street this week",
+          "next": "gas",
+          "gives": "pavement"
+        }
+      ]
+    },
+    "gas": {
+      "text": "Two nights before opening. Walking past Fantasyland with a flashlight, you catch a strong smell of gas near a new pipe. The night watchman is about to lock the gate and leave.",
+      "fact": "On opening day a gas leak was found, and three areas of the park had to close for a while.",
+      "timer": 28,
+      "timeout": "missed",
+      "choices": [
+        {
+          "text": "call the gas company now",
+          "next": "tomorrowland"
+        }
+      ]
+    },
+    "missed": {
+      "text": "By the time you find a telephone, the watchman is gone and the gate is locked. You tell yourself you will report it in the morning. In the rush of the last day, you forget.",
+      "choices": [
+        {
+          "text": "get back to work",
+          "next": "tomorrowland",
+          "gives": "gasleak"
+        }
+      ]
+    },
+    "tomorrowland": {
+      "text": "Tomorrowland is supposed to show the year 1986, but parts of it are still bare frames. The television cameras will see everything. The crews are exhausted, and there are only hours left.",
+      "fact": "Tomorrowland was not finished in time. Bunting, the colourful flags hung for celebrations, covered some of the unfinished attractions.",
+      "choices": [
+        {
+          "text": "rush crews to finish it",
+          "next": "gate",
+          "gives": "behind"
+        },
+        {
+          "text": "hide gaps behind bunting",
+          "next": "gate"
+        }
+      ]
+    },
+    "gate": {
+      "text": "Sunday, July 17. By late morning the heat is fierce and cars are crawling toward Anaheim. A sea of people waves invitations at the main gate. Some of the tickets look a little too fresh.",
+      "fact": "Traffic on the Santa Ana Freeway backed up for seven miles as people drove to the opening.",
+      "choices": [
+        {
+          "text": "check every ticket twice",
+          "next": "mainst",
+          "needs": "guards"
+        },
+        {
+          "text": "let the crowd stream in",
+          "next": "flood",
+          "lacks": "guards"
+        }
+      ]
+    },
+    "flood": {
+      "text": "Thousands of people pour past who were never invited. The paths jam, the lines for rides stretch on and on, and nobody can stop the flood.",
+      "fact": "One man propped a ladder against the park fence and charged people five dollars each to climb over.",
+      "choices": [
+        {
+          "text": "push through the crowd",
+          "next": "mainst"
+        }
+      ]
+    },
+    "mainst": {
+      "text": "Noon on Main Street, U.S.A. The thermometer reads about 100 degrees. Brass bands play, children run, and the sun beats down on the new road surface.",
+      "fact": "Southern California was in a record heat wave, with temperatures around 100 degrees Fahrenheit or more.",
+      "choices": [
+        {
+          "text": "walk down the solid street",
+          "next": "riverboat",
+          "needs": "pavement"
+        },
+        {
+          "text": "help a lady stuck in tar",
+          "next": "sticky",
+          "lacks": "pavement"
+        }
+      ]
+    },
+    "sticky": {
+      "text": "The fresh asphalt is as soft as warm toffee. High heels sink in and stick fast. You pry a shoe loose and hand it back to its embarrassed owner, then another, then another.",
+      "choices": [
+        {
+          "text": "keep heading for the river",
+          "next": "riverboat"
+        }
+      ]
+    },
+    "riverboat": {
+      "text": "At Frontierland, the Mark Twain riverboat is jammed with people, and more keep pushing up the gangway. The deck tilts toward the water. Someone needs to close the gate.",
+      "fact": "The Mark Twain riverboat really was overloaded on opening day and rolled from side to side in the water.",
+      "timer": 28,
+      "timeout": "tilt",
+      "choices": [
+        {
+          "text": "close the boarding gate",
+          "next": "verdict"
+        }
+      ]
+    },
+    "tilt": {
+      "text": "Too slow. The overloaded boat lurches and its deck dips toward the water. Crew members shout for people to spread out, and it steadies. Nobody is hurt, but word of the scare spreads through the park.",
+      "choices": [
+        {
+          "text": "head back to the office",
+          "next": "verdict",
+          "gives": "riverboat"
+        }
+      ]
+    },
+    "verdict": {
+      "text": "Late afternoon. The live broadcast is over and the crowds are thinning. Admiral Fowler sits down heavily on a bench and asks you how the day went. You both know the newspapers will decide.",
+      "fact": "The live special Dateline Disneyland aired on ABC at 4:30 p.m. Pacific time. Estimates of its audience range from 70 to 90 million viewers.",
+      "choices": [
+        {
+          "text": "say it went really well",
+          "next": "smooth",
+          "needs": "guards,food,water",
+          "lacks": "norooms,chaos,gasleak,riverboat,behind"
+        },
+        {
+          "text": "admit it was a disaster",
+          "next": "meltdown",
+          "needs": "norooms"
+        },
+        {
+          "text": "confess we let them down",
+          "next": "meltdown",
+          "needs": "chaos",
+          "lacks": "norooms"
+        },
+        {
+          "text": "sigh about the thirsty crowd",
+          "next": "blacksunday",
+          "lacks": "water,norooms,chaos"
+        },
+        {
+          "text": "groan about the gas leak",
+          "next": "blacksunday",
+          "needs": "gasleak",
+          "lacks": "norooms,chaos"
+        },
+        {
+          "text": "grumble about fake tickets",
+          "next": "blacksunday",
+          "needs": "food",
+          "lacks": "guards,norooms,chaos"
+        },
+        {
+          "text": "moan about the empty stands",
+          "next": "blacksunday",
+          "needs": "guards",
+          "lacks": "food,norooms,chaos"
+        },
+        {
+          "text": "shudder about the riverboat",
+          "next": "blacksunday",
+          "needs": "riverboat",
+          "lacks": "norooms,chaos"
+        },
+        {
+          "text": "worry about tomorrowland",
+          "next": "blacksunday",
+          "needs": "behind",
+          "lacks": "norooms,chaos"
+        }
+      ]
+    },
+    "smooth": {
+      "text": "The newspapers grumble about the heat and the crowds, but they also report fair gates, plenty of food and cool water for everyone. Your opening day runs far more smoothly than the real one did. Tomorrow the public arrives, and Disneyland is ready.",
+      "fact": "In real life Disneyland recovered fast. It welcomed its one millionth visitor within seven weeks, and about 3.6 million people came in its first year.",
+      "ending": "good",
+      "choices": []
+    },
+    "blacksunday": {
+      "text": "Long lines, sunburn, problems everywhere and grumpy reporters: much like the real opening day. Walt and his team will remember it as Black Sunday. Still, the park is open, and tomorrow the public will come.",
+      "fact": "After the bad reviews, the press was invited back for a private second day to see Disneyland working properly. The public opening on Monday, July 18, went much better.",
+      "ending": "mixed",
+      "choices": []
+    },
+    "meltdown": {
+      "text": "Everything goes wrong at once. Desperate crowds overwhelm the park, guests can't find what they need, and reporters write that Disneyland is a disaster. Investors start to wonder whether the whole thing was a mistake. Your story ends here.",
+      "fact": "The Associated Press really did report that Disney disappointed thousands of children on opening day. Some in Hollywood had already called the project Walt's Folly.",
+      "ending": "bad",
+      "choices": []
+    }
+  }
+}
